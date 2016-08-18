@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CloudFlareUtilities</name>
+    </assembly>
+    <members>
+        <member name="T:CloudFlareUtilities.ClearanceHandler">
+            <summary>
+            A HTTP handler that transparently manages Cloudflare's Anti-DDoS measure.
+            </summary>
+            <remarks>
+            Only the JavaScript challenge can be handled. CAPTCHA and IP address blocking cannot be bypassed.
+            </remarks>
+        </member>
+        <member name="M:CloudFlareUtilities.ClearanceHandler.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:CloudFlareUtilities.ClearanceHandler"/> class with a <see cref="T:System.Net.Http.HttpClientHandler"/> as inner handler.
+            </summary>
+        </member>
+        <member name="M:CloudFlareUtilities.ClearanceHandler.#ctor(System.Net.Http.HttpMessageHandler)">
+            <summary>
+            Creates a new instance of the <see cref="T:CloudFlareUtilities.ClearanceHandler"/> class with a specific inner handler.
+            </summary>
+            <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
+        </member>
+        <member name="M:CloudFlareUtilities.ClearanceHandler.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:CloudFlareUtilities.ClearanceHandler"/>, and optionally disposes of the managed resources.
+            </summary>
+            <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to releases only unmanaged resources.</param>
+        </member>
+        <member name="M:CloudFlareUtilities.ClearanceHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Sends an HTTP request to the inner handler to send to the server as an asynchronous operation.
+            </summary>
+            <param name="request">The HTTP request message to send to the server.</param>
+            <param name="cancellationToken">A cancellation token to cancel operation.   </param>
+            <returns>The task object representing the asynchronous operation.</returns>
+        </member>
+    </members>
+</doc>

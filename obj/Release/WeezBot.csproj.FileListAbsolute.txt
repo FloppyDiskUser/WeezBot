@@ -1,0 +1,9 @@
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\bin\Release\WeezBot.exe.config
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\WeezBot.csproj.App.config
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\App.g.cs
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\GeneratedInternalTypeHelper.g.cs
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\WeezBot_MarkupCompile.cache
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\WeezBot_MarkupCompile.lref
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\Seiten\Hauptmenu.g.cs
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\Seiten\loading.g.cs
+C:\Users\bjarn\Documents\C#\WeezBot\WeezBot\obj\Release\MainWindow.g.cs
