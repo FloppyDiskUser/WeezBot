@@ -5,6 +5,30 @@
       "Value": "Pokéball"
     },
     {
+      "Key": "moving",
+      "Value": "Am Bewegen..."
+    },
+    {
+      "Key": "caught",
+      "Value": "{0} Gefangen"
+    },
+    {
+      "Key": "transfer",
+      "Value": "{0} Verschickt"
+    },
+    {
+      "Key": "evolve",
+      "Value": "{0} Entwickelt"
+    },
+    {
+      "Key": "fight",
+      "Value": "Am Kämpfen"
+    },
+    {
+      "Key": "hatch",
+      "Value": "{0} Geschlüpft"
+    },
+    {
       "Key": "greatPokeball",
       "Value": "Superball"
     },
@@ -492,19 +516,19 @@
     },
     {
       "Key": "PokedexCatchedTelegram",
-      "Value":  "--- Pokedex gefangen --- \n"  
+      "Value":  "--- Pokedex gefangen --- \n"
     },
     {
       "Key": "PokedexPokemonCatchedTelegram",
-      "Value":  "#{0} Name: {1} | Gefangen: {2} | Gesehen: {3} \n"  
+      "Value":  "#{0} Name: {1} | Gefangen: {2} | Gesehen: {3} \n"
     },
     {
       "Key": "PokedexNeededTelegram",
-      "Value":  "--- Pokedex gebraucht --- \n"  
+      "Value":  "--- Pokedex gebraucht --- \n"
     },
     {
       "Key": "PokedexPokemonNeededTelegram",
-      "Value":  "#{0} Name: {1} \n"  
+      "Value":  "#{0} Name: {1} \n"
     }
   ],
   "PokemonStrings": [

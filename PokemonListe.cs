@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace WeezBot
 {
@@ -31,6 +32,12 @@ namespace WeezBot
         public ulong id { get; set; }
         public string Move1 { get; set; }
         public string Move2 { get; set; }
+        public BitmapImage CandySource { get; set; }
+
+        public PokemonListe()
+        {
+            CandySource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Candy.png")));
+        }
 
         public void setAll(string Name, string CP, string IV, string Bonbon, ulong id, string move1, string move2, string pfad)
         {

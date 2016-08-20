@@ -17,6 +17,30 @@
       "Value": "MasterBall"
     },
     {
+      "Key": "moving",
+      "Value": "Moving..."
+    },
+    {
+      "Key": "catch",
+      "Value": "{0} caught"
+    },
+    {
+      "Key": "transfer",
+      "Value": "{0} transfered"
+    },
+    {
+      "Key": "evolve",
+      "Value": "{0} evolved"
+    },
+    {
+      "Key": "fight",
+      "Value": "Fighting..."
+    },
+    {
+      "Key": "hatch",
+      "Value": "{0} hatched"
+    },
+    {
       "Key": "wrongAuthType",
       "Value": "Unknown AuthType in config.json"
     },

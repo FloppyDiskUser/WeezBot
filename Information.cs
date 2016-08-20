@@ -61,6 +61,7 @@ namespace WeezBot
         public string Message = "";
         public string PokemonID = "000";
         public string PokemonName = "";
+        public PokemonListe Pokemon = new PokemonListe();
 
         public bool LuckyEggActive = false;
         public string liveHappening = "moving";
@@ -79,8 +80,8 @@ namespace WeezBot
             else
                 if (level != LogLevel.Error) ErrorHappen = false;
                 else LoginError = false;
-            if (level == LogLevel.Flee) liveHappening = "fight";
-            if (liveHappening == "moving") counter = 0;
+            if (level == LogLevel.Flee) { liveHappening = "fight";}
+                if (liveHappening == "moving") counter = 0;
             if (counter > 0) { liveHappening = "moving"; counter = 0; }
 
             for(int h = 6;h >= 0; --h)
@@ -171,10 +172,12 @@ namespace WeezBot
                 LogLevel.Egg);
         }
 
-        private   void HandleEvent(EggHatchedEvent eggHatchedEvent, ISession session)
+        private void HandleEvent(EggHatchedEvent eggHatchedEvent, ISession session)
         {
             liveHappening = "hatched";
-             Write(session.Translation.GetTranslation(TranslationString.IncubatorEggHatched,
+            PokemonID = pokemonNameToId[eggHatchedEvent.PokemonId.ToString()];
+            PokemonName = session.Translation.GetPokemonTranslation(eggHatchedEvent.PokemonId);
+            Write(session.Translation.GetTranslation(TranslationString.IncubatorEggHatched,
                 session.Translation.GetPokemonTranslation(eggHatchedEvent.PokemonId), eggHatchedEvent.Level, eggHatchedEvent.Cp, eggHatchedEvent.MaxCp, eggHatchedEvent.Perfection),
                 LogLevel.Egg);
         }
@@ -254,17 +257,25 @@ namespace WeezBot
             {
                 case CatchPokemonResponse.Types.CatchStatus.CatchError:
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusError);
+                    PokemonID = pokemonNameToId[pokemonCaptureEvent.Id.ToString()];
+                    PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
                     liveHappening = "fight";
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchEscape:
                     liveHappening = "fight";
+                    PokemonID = pokemonNameToId[pokemonCaptureEvent.Id.ToString()];
+                    PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusEscape);
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchFlee:
                     liveHappening = "fight";
+                    PokemonID = pokemonNameToId[pokemonCaptureEvent.Id.ToString()];
+                    PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusFlee);
                     break;
                 case CatchPokemonResponse.Types.CatchStatus.CatchMissed:
+                    PokemonID = pokemonNameToId[pokemonCaptureEvent.Id.ToString()];
+                    PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
                     strStatus = session.Translation.GetTranslation(TranslationString.CatchStatusMissed);
                     liveHappening = "fight";
                     break;
@@ -292,6 +303,7 @@ namespace WeezBot
                 coords[0] = pokemonCaptureEvent.Latitude;
                 coords[1] = pokemonCaptureEvent.Longitude;
                 PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
+                Pokemon.setAll(PokemonName, pokemonCaptureEvent.Cp + " / " + pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00") + " % ", pokemonCaptureEvent.FamilyCandies.ToString(), pokemonCaptureEvent.UniqueId, "", "","");
                 message = session.Translation.GetTranslation(TranslationString.EventPokemonCaptureSuccess, catchStatus, catchType, session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
                 pokemonCaptureEvent.Level, pokemonCaptureEvent.Cp, pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00"), pokemonCaptureEvent.Probability,
                 pokemonCaptureEvent.Distance.ToString("F2"),

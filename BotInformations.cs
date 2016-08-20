@@ -12,6 +12,46 @@ using System.Windows.Media.Imaging;
 
 namespace WeezBot
 {
+    public class Languages
+    {
+        public List<string> LanguageStringToCode = new List<string>();
+
+
+        public Languages()
+        {
+            LanguageStringToCode.Add("ca");
+            LanguageStringToCode.Add("cs");
+            LanguageStringToCode.Add("da");
+            LanguageStringToCode.Add("et");
+            LanguageStringToCode.Add("de");
+            LanguageStringToCode.Add("es");
+            LanguageStringToCode.Add("gr");
+            LanguageStringToCode.Add("fr");
+            LanguageStringToCode.Add("hu");
+            LanguageStringToCode.Add("id");
+            LanguageStringToCode.Add("it");
+            LanguageStringToCode.Add("lt");
+            LanguageStringToCode.Add("nl");
+            LanguageStringToCode.Add("no");
+            LanguageStringToCode.Add("pl");
+            LanguageStringToCode.Add("pt-br");
+            LanguageStringToCode.Add("ro");
+            LanguageStringToCode.Add("ru_RU");
+            LanguageStringToCode.Add("sv");
+            LanguageStringToCode.Add("th");
+            LanguageStringToCode.Add("tr");
+            LanguageStringToCode.Add("uk_UA");
+            LanguageStringToCode.Add("vi");
+            LanguageStringToCode.Add("zh_CN");
+        }          
+
+        public List<string> getLang()
+        {
+            return LanguageStringToCode;
+        }
+    }
+
+
     public class MessageDesign
     {
         public string Message { get; set; }
@@ -47,18 +87,20 @@ namespace WeezBot
         public Location Position { get; set; }
         public string MapLabel { get; set; }
         public string Stardust { get; set; }
+        public string Runtime { get; set; }
 
         public Overlay()
         {
             Position = new Location(0.00, 0.00);
         }
 
-        public void updateData(string Nickname, string Level, double needXp,double haveXp, string stardust)
+        public void updateData(string Nickname, string Level, double needXp,double haveXp, string stardust,string runtime)
         {
             this.Nickname = Nickname;
             this.Level = "Level " + Level;
             this.xp = (this.HaveXp = haveXp) + " / " + (this.NeedXp = needXp);
             this.Stardust = "Stardust: " + stardust;
+            this.Runtime = runtime;
         }
 
         public void setCoords(double lat, double lng)

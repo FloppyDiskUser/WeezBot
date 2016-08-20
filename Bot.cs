@@ -33,8 +33,6 @@ namespace WeezBot
         public Session session;
         public Boolean isLoaded = false;
         public getPokemonDisplayed pokemonDisplay;
-        string Nickname, Stardust, level;
-        double needXp, haveXp;
         PoGo.NecroBot.Logic.Common.Translation Uebersetzer = new Translation();
         private Dictionary<string, string> pokemonNameToId = new Dictionary<string, string>();
 
@@ -80,18 +78,17 @@ namespace WeezBot
 
             session = new Session(new ClientSettings(Einstellungen), new LogicSettings(Einstellungen));
             session.Client.ApiFailure = new ApiFailureStrategy(session);
-            var machine = new StateMachine();
             var stats = new Statistics();
             
 
             stats.DirtyEvent += () =>
             {
                 isLoaded = true;
-                this.GraphicalInterface.updateData(stats.getNickname().ToString(), stats.getLevel().ToString(), stats.getNeedXp(), stats.getTotalXp(), stats.getStardust().ToString());
+                this.GraphicalInterface.updateData(stats.getNickname().ToString(), stats.getLevel().ToString(), stats.getNeedXp(), stats.getTotalXp(), stats.getStardust().ToString(), Math.Round(stats.GetRuntime(),3).ToString());
             };
                 
             var aggregator = new StatisticsAggregator(stats);
-
+            var machine = new StateMachine();
             session.EventDispatcher.EventReceived += evt => Informations.Listen(evt, session);
             session.EventDispatcher.EventReceived += evt => aggregator.Listen(evt, session);
 
@@ -99,7 +96,7 @@ namespace WeezBot
 
             session.Navigation.UpdatePositionEvent += (lat,lng) => session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
             session.Navigation.UpdatePositionEvent += Navigation_UpdatePositionEvent;
-            machine.AsyncStart(new VersionCheckState(), session,subPath);
+            machine.AsyncStart(new VersionCheckState(), session, subPath);
             pokemonDisplay = new getPokemonDisplayed(session);
             Einstellungen.checkProxy(session.Translation);
         }

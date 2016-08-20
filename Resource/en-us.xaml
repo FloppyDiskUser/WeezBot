@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:util="clr-namespace:WeezBot.Utils"
                     xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <util:EnumToArrayConverter x:Key="EnumToArrayConv" />
     <util:VisibilityConverter x:Key="VisConv" />
@@ -42,6 +43,14 @@
         <Setter Property="Padding" Value="3,2,3,2" />
         <Setter Property="Controls:TextBoxHelper.ClearTextButton" Value="True" />
     </Style>
+    <Style x:Key="LineItemComboBox" TargetType="ComboBox">
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Width" Value="60" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="3,2,3,2" />
+        <Setter Property="Controls:TextBoxHelper.ClearTextButton" Value="True" />
+    </Style>
     <Style x:Key="LineItemTextBoxMd" TargetType="TextBox">
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Width" Value="120" />
@@ -59,30 +68,14 @@
         <Setter Property="Controls:TextBoxHelper.ClearTextButton" Value="True" />
     </Style>
 
-    <DataTemplate x:Key="PokemonToggleTemplate">
-        <CheckBox IsChecked="{Binding IsChecked}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Width="30"  Text="{Binding Numeric}" TextAlignment="Right" Margin="3,1" VerticalAlignment="Center" />
-                <TextBlock Width="240" Text="{Binding Name}"    TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
+    <DataTemplate x:Key="PokemonToggleTemplate" DataType="PokemonToggle">
+        <materialDesign:Card Margin="0,10,10,0" Width="220" Height="180">
+            <StackPanel>
+                <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
+                <Image Source="{Binding imageSource}" Height="100" />
+                <Controls:ToggleSwitch OffLabel="Keep" OnLabel="Transfer" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
             </StackPanel>
-        </CheckBox>
-    </DataTemplate>
-    <DataTemplate x:Key="PokemonTransfer">
-        <StackPanel Orientation="Horizontal" Height="45" Width="1100" VerticalAlignment="Top">
-            <Image Height="30" Source="{Binding Icon}" Margin="3,0,0,0" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="150" Height="30" Content="{Binding Name}" Margin="15,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="26" Height="30" Content="CP: " Margin="0,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="70" Height="30" Content="{Binding CP}" Margin="0,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Width="26" Height="30" Content="IV: " Margin="15,1,0,0" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="60" Height="30" Content="{Binding IV}" Margin="0,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="60" Height="30" Content="Bonbons:" Margin="15,1,0,0" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="50" Height="30" Content="{Binding Bonbon}" Margin="0,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="60" Height="30" Content="Attack 1:" Margin="15,1,0,0" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="100" Height="30" Content="{Binding Move1}" Margin="0,1" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="60" Height="30" Content="Attack 2:" Margin="15,1,0,0" />
-            <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="100" Height="30" Content="{Binding Move2}" Margin="0,1" />
-            <Button Content="Verschicken" Margin="40,1" Height="30"/>
-        </StackPanel>
+        </materialDesign:Card>
     </DataTemplate>
 
 </ResourceDictionary>

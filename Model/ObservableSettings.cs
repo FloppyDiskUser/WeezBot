@@ -7,9 +7,114 @@ using POGOProtos.Enums;
 using System.Collections.ObjectModel;
 using System;
 using System.IO;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using PoGo.NecroBot.Logic.Common;
 
 namespace WeezBot.Model
 {
+    public static class PasswordBoxAssistant
+    {
+        public static readonly DependencyProperty BoundPassword =
+            DependencyProperty.RegisterAttached("BoundPassword", typeof(string), typeof(PasswordBoxAssistant), new PropertyMetadata(string.Empty, OnBoundPasswordChanged));
+
+        public static readonly DependencyProperty BindPassword = DependencyProperty.RegisterAttached(
+            "BindPassword", typeof(bool), typeof(PasswordBoxAssistant), new PropertyMetadata(false, OnBindPasswordChanged));
+
+        private static readonly DependencyProperty UpdatingPassword =
+            DependencyProperty.RegisterAttached("UpdatingPassword", typeof(bool), typeof(PasswordBoxAssistant), new PropertyMetadata(false));
+
+        private static void OnBoundPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PasswordBox box = d as PasswordBox;
+
+            // only handle this event when the property is attached to a PasswordBox
+            // and when the BindPassword attached property has been set to true
+            if (d == null || !GetBindPassword(d))
+            {
+                return;
+            }
+
+            // avoid recursive updating by ignoring the box's changed event
+            box.PasswordChanged -= HandlePasswordChanged;
+
+            string newPassword = (string)e.NewValue;
+
+            if (!GetUpdatingPassword(box))
+            {
+                box.Password = newPassword;
+            }
+
+            box.PasswordChanged += HandlePasswordChanged;
+        }
+
+        private static void OnBindPasswordChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+        {
+            // when the BindPassword attached property is set on a PasswordBox,
+            // start listening to its PasswordChanged event
+
+            PasswordBox box = dp as PasswordBox;
+
+            if (box == null)
+            {
+                return;
+            }
+
+            bool wasBound = (bool)(e.OldValue);
+            bool needToBind = (bool)(e.NewValue);
+
+            if (wasBound)
+            {
+                box.PasswordChanged -= HandlePasswordChanged;
+            }
+
+            if (needToBind)
+            {
+                box.PasswordChanged += HandlePasswordChanged;
+            }
+        }
+
+        private static void HandlePasswordChanged(object sender, RoutedEventArgs e)
+        {
+            PasswordBox box = sender as PasswordBox;
+
+            // set a flag to indicate that we're updating the password
+            SetUpdatingPassword(box, true);
+            // push the new password into the BoundPassword property
+            SetBoundPassword(box, box.Password);
+            SetUpdatingPassword(box, false);
+        }
+
+        public static void SetBindPassword(DependencyObject dp, bool value)
+        {
+            dp.SetValue(BindPassword, value);
+        }
+
+        public static bool GetBindPassword(DependencyObject dp)
+        {
+            return (bool)dp.GetValue(BindPassword);
+        }
+
+        public static string GetBoundPassword(DependencyObject dp)
+        {
+            return (string)dp.GetValue(BoundPassword);
+        }
+
+        public static void SetBoundPassword(DependencyObject dp, string value)
+        {
+            dp.SetValue(BoundPassword, value);
+        }
+
+        private static bool GetUpdatingPassword(DependencyObject dp)
+        {
+            return (bool)dp.GetValue(UpdatingPassword);
+        }
+
+        private static void SetUpdatingPassword(DependencyObject dp, bool value)
+        {
+            dp.SetValue(UpdatingPassword, value);
+        }
+    }
 
     public class ObservableSettings : DependencyObject
     {
@@ -1397,13 +1502,19 @@ namespace WeezBot.Model
             res.DumpPokemonStats = set.DumpPokemonStats;
             // OBJECTS & ITERATORS
             res.PokemonToSnipe = set.PokemonToSnipe;
+            LogicSettings setting = new LogicSettings(set);
+            Translation trans = PoGo.NecroBot.Logic.Common.Translation.Load(setting);
+            
             foreach (PokemonId pid in Enum.GetValues(typeof(PokemonId)))
             {
-                res.NoTransferCollection.Add(new PokemonToggle(pid, (null != set.PokemonsNotToTransfer && set.PokemonsNotToTransfer.Contains(pid))));
-                res.EvolveCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToEvolve && set.PokemonsToEvolve.Contains(pid))));
-                res.UpgradeCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToLevelUp && set.PokemonsToLevelUp.Contains(pid))));
-                res.IgnoreCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToIgnore && set.PokemonsToIgnore.Contains(pid))));
-                res.MasterballCollection.Add(new PokemonToggle(pid, (null != set.PokemonToUseMasterball && set.PokemonToUseMasterball.Contains(pid))));
+                if (pid.ToString() != "Missingno")
+                {
+                    res.NoTransferCollection.Add(new PokemonToggle(pid, (null != set.PokemonsNotToTransfer && set.PokemonsNotToTransfer.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                    res.EvolveCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToEvolve && set.PokemonsToEvolve.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                    res.UpgradeCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToLevelUp && set.PokemonsToLevelUp.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                    res.IgnoreCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToIgnore && set.PokemonsToIgnore.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                    res.MasterballCollection.Add(new PokemonToggle(pid, (null != set.PokemonToUseMasterball && set.PokemonToUseMasterball.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                }
             }
             foreach (PokemonId key in set.PokemonsTransferFilter.Keys)
                 res.PokemonsTransferFilter.Add(key, set.PokemonsTransferFilter[key]);
@@ -1582,6 +1693,18 @@ namespace WeezBot.Model
 
     public class PokemonToggle : DependencyObject
     {
+        public string translatedName
+        {
+            get;
+            set;
+        }
+
+        public BitmapImage imageSource
+        {
+            get;
+            set;
+        }
+
         public string Name
         {
             get { return (string)GetValue(NameProperty); }
@@ -1615,11 +1738,18 @@ namespace WeezBot.Model
             DependencyProperty.Register("IsChecked", typeof(bool), typeof(PokemonToggle), new PropertyMetadata(false));
 
         public PokemonToggle() { }
-        public PokemonToggle(PokemonId id, bool isChecked)
+        public PokemonToggle(PokemonId id, bool isChecked,string translatedName)
         {
+            this.translatedName = translatedName;
             Name = id.ToString();
             Id = id;
             Numeric = (int)id;
+            string idStr = Numeric.ToString();
+            string finalStr = "";
+            if (idStr.Length > 2) finalStr = idStr;
+            if (idStr.Length == 2) finalStr = "0" + idStr;
+            if (idStr.Length == 1) finalStr = "00" + idStr;
+            imageSource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", finalStr + ".png")));
             IsChecked = isChecked;
         }
 

@@ -2,6 +2,9 @@
 using System.Windows;
 using System.Windows.Data;
 using System.Linq;
+using System.ComponentModel;
+using System.Reflection;
+using System.Globalization;
 
 namespace WeezBot.Utils
 {
