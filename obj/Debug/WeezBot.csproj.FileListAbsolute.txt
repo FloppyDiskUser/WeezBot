@@ -87,6 +87,7 @@ C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\bin\Debug\System.Data.HashFun
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\bin\Debug\System.Data.HashFunction.Core.xml
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\bin\Debug\System.Data.HashFunction.Interfaces.xml
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.csproj.App.config
+C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.csprojResolveAssemblyReference.cache
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\MainWindow.g.cs
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\App.g.cs
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\GeneratedInternalTypeHelper.g.cs
@@ -103,4 +104,3 @@ C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.exe.manifes
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.application
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.exe
 C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.pdb
-C:\Users\bjarn\Documents\C#\WeezBot Nighty\WeezBot\obj\Debug\WeezBot.csprojResolveAssemblyReference.cache

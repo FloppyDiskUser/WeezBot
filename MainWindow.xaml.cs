@@ -22,6 +22,8 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using PoGo.NecroBot.Logic.State;
 using System.Windows.Threading;
+using System.Linq;
+using PoGo.NecroBot.Logic.Common;
 
 namespace WeezBot
 {
@@ -52,6 +54,8 @@ namespace WeezBot
 
         // Other Variable
         private Boolean Iv = false;
+        public bool isLogedInOnTheWeb = false;
+        private latestAction[] show = new latestAction[7];
         public int PokestopCounter = 0;
         int quickGuidePos = 0;
         Boolean firstStart = true;
@@ -64,6 +68,10 @@ namespace WeezBot
         public List<string> translationLanguages;
         public Request.Request Requester = new Request.Request();
         public DateTime stopBotTime = new DateTime();
+        MapLayer imageLayerNew = new MapLayer();
+        Translation uebersetzer = new PoGo.NecroBot.Logic.Common.Translation();
+        DateTime luckyEggDauer = new DateTime();
+        bool luckyEggEnabled = false;
 
         public MainWindow()
         {
@@ -94,6 +102,15 @@ namespace WeezBot
                     dockPani.Visibility = Visibility.Collapsed;
                     quickStart.Visibility = Visibility.Visible;
                 }
+                else
+                {
+                    dockPani.Visibility = Visibility.Collapsed;
+                    if (Settings.AuthType == AuthType.Google)
+                        startPageUsername.Content = Settings.GoogleUsername;
+                    else
+                        startPageUsername.Content = Settings.PtcUsername;
+                    startPage.Visibility = Visibility.Visible;
+                }
             }
 
 
@@ -106,7 +123,6 @@ namespace WeezBot
             BingMapsApi.Text = KeyName;
             LoadingMap.CredentialsProvider = new ApplicationIdCredentialsProvider(KeyName);
             LoadingMap.Center = new Microsoft.Maps.MapControl.WPF.Location(Settings.Latitude, Settings.Longitude);
-            playerSymbol.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "player_symbol.png")));
 
             CommandLineLabels[0] = Command1;
             CommandLineLabels[1] = Command2;
@@ -122,15 +138,15 @@ namespace WeezBot
             LanguageDict["Dutch"] = "nl";
             LanguageDict["Spanish"] = "es";
             LanguageDict["Italian"] = "it";
-
+            Requester.startBot();
             // Starts The Bot with the Settings Tab
             OpenSettings();
-
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && args[1] == "/u")
             {
                 quickStart.Visibility = Visibility.Collapsed;
                 dockPani.Visibility = Visibility.Collapsed;
+                startPage.Visibility = Visibility.Collapsed;
                 updateWindow.Visibility = Visibility.Collapsed;
                 updateFinishGrid.Visibility = Visibility.Visible;
             }
@@ -138,6 +154,7 @@ namespace WeezBot
             {
                 quickStart.Visibility = Visibility.Collapsed;
                 dockPani.Visibility = Visibility.Collapsed;
+                startPage.Visibility = Visibility.Collapsed;
                 updateWindow.Visibility = Visibility.Collapsed;
                 timeElapsed.Visibility = Visibility.Visible;
             }
@@ -147,6 +164,7 @@ namespace WeezBot
         public void KeepThisVersion(object sender, RoutedEventArgs e)
         {
             updateWindow.Visibility = Visibility.Collapsed;
+            SuccessfullyRegistered.Visibility = Visibility.Collapsed;
             dockPani.Visibility = Visibility.Visible;
         }
 
@@ -161,6 +179,12 @@ namespace WeezBot
             Process.Start(restart);
             Environment.Exit(-1);
             return;
+        }
+
+        public void goToConfigs(object sender, RoutedEventArgs e)
+        {
+            startPage.Visibility = Visibility.Collapsed;
+            dockPani.Visibility = Visibility.Visible;
         }
 
         public void Quick_Guide(object sender, RoutedEventArgs e)
@@ -201,7 +225,6 @@ namespace WeezBot
             ResetCoordsButton_Click(this, new RoutedEventArgs());
             SaveButton_Click(this, new RoutedEventArgs());
             quickStart3.Visibility = Visibility.Collapsed;
-            dockPani.Visibility = Visibility.Visible;
             button_Click(this, new RoutedEventArgs());
         }
 
@@ -326,7 +349,10 @@ namespace WeezBot
         public void createNewBot(string Name, int Start)
         {
             if (BotAlreadyConfig[Start] == true) return;
-            Loading.Opacity = 1;
+            dockPani.Visibility = Visibility.Collapsed;
+            startPage.Visibility = Visibility.Collapsed;
+            loadingMessages.Content = "Starting...";
+            Loading.Visibility = Visibility.Visible;
             firstStart = true;
             anzahlMaximaleButtons++;
             BotAlreadyConfig[ausgewaehlterBot] = true;
@@ -334,7 +360,18 @@ namespace WeezBot
             ThreadBot[ausgewaehlterBot] = new Thread(bots[ausgewaehlterBot].StartBot);
             ThreadBot[ausgewaehlterBot].Start();
             check = false;
-            Requester.startBot();
+            
+            if(File.Exists(Path.Combine(Directory.GetCurrentDirectory(),"Config",botNames[ausgewaehlterBot], "luckyEgg.ini")))
+            {
+                string inhalt = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Config", botNames[ausgewaehlterBot], "luckyEgg.ini"));
+                luckyEggDauer = DateTime.Parse(inhalt);
+                luckyEggEnabled = true;
+                ButtonUseLuckyEgg.Visibility = Visibility.Collapsed;
+                BitmapImage img = new BitmapImage(new Uri((Path.Combine(Directory.GetCurrentDirectory(), "image", "Lucky_Egg.png"))));
+                WpfAnimatedGif.ImageBehavior.SetAnimatedSource(LuckyEggImage,img);
+                LuckyEgg.Visibility = Visibility.Visible;
+            }
+
             Switch = new Thread(switchBot);
             Switch.Start();
         }
@@ -405,9 +442,13 @@ namespace WeezBot
                     {
                         bots[ausgewaehlterBot].updateEggs();
                         Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => {
-                            gui = bots[ausgewaehlterBot].updateUi(Iv); changeLive(bots[ausgewaehlterBot].Informations.liveHappening, bots[ausgewaehlterBot].Informations.PokemonName,
+                        gui = bots[ausgewaehlterBot].updateUi(Iv); changeLive(bots[ausgewaehlterBot].Informations.liveHappening, bots[ausgewaehlterBot].Informations.PokemonName,
 bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informations.coords, bots[ausgewaehlterBot].Informations.Pokemon);
-                            pokemonListBox.ItemsSource = gui.PokemonList; EggList.ItemsSource = gui.EggLists; updateUi(); if (gui.currentLat == 0.00) { LoadingMap.Center = new Microsoft.Maps.MapControl.WPF.Location(_set.DefaultLatitude, _set.DefaultLongitude); } else { LoadingMap.Center = new Microsoft.Maps.MapControl.WPF.Location(gui.currentLat, gui.currentLng); }
+                        pokemonListBox.ItemsSource = gui.PokemonList; EggList.ItemsSource = gui.EggLists; updateUi(); if (gui.currentLat == 0.00) { setPlayerPosition( _set.DefaultLatitude,_set.DefaultLongitude); LoadingMap.Center = new Microsoft.Maps.MapControl.WPF.Location(_set.DefaultLatitude, _set.DefaultLongitude); } else { LoadingMap.Center = new Microsoft.Maps.MapControl.WPF.Location(gui.currentLat, gui.currentLng); }
+                            if (isLogedInOnTheWeb == true)
+                            {
+                                Dispatcher.BeginInvoke(new Action(() => Requester.updateDataIfLogin(gui.Nickname, gui.TeamName, gui.Stardust, gui.Level, gui.xp, gui.Runtime)));
+                            }
                             if (EnableAutomatedBotStop.IsChecked == true)
                             {
                                 DateTime time_now = DateTime.Now;
@@ -423,6 +464,25 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
                                     ClosingInMinutes.Content = totalMinutes.ToString("0.00");
                                 }
                             }
+                            if(luckyEggEnabled == true)
+                            {
+                                DateTime jetzt = DateTime.Now;
+                                if(luckyEggDauer < jetzt)
+                                {
+                                    LuckyEgg.Visibility = Visibility.Collapsed;
+                                    luckyEggEnabled = false;
+                                    ButtonUseLuckyEgg.Visibility = Visibility.Visible;
+                                    File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Config", botNames[ausgewaehlterBot], "luckyEgg.ini"));
+                                } else
+                                {
+                                    ButtonUseLuckyEggWarning.Content = "";
+                                    LuckyEggLabel.Content = Math.Round(((luckyEggDauer - jetzt).TotalMinutes),1).ToString() + " Min.";
+                                }
+                            } else
+                            {
+                                ButtonUseLuckyEgg.Visibility = Visibility.Visible;
+                                LuckyEgg.Visibility = Visibility.Collapsed;
+                            }
                             RuntimeLabel.Content = gui.Runtime.ToString();
                         }));
                         int norm = 0, ultra = 0, great = 0, master = 0;
@@ -435,7 +495,7 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
                     }
                     if (firstStart == true && bots[ausgewaehlterBot].isLoaded == true)
                     {
-                        Dispatcher.BeginInvoke(new Action(() => { BotTabItem.Visibility = Visibility.Visible; EggsTabItem.Visibility = Visibility.Visible; PokemonTabItem.Visibility = Visibility; }));
+                        Dispatcher.BeginInvoke(new Action(() => { BotTabItem.Visibility = Visibility.Visible; EggsTabItem.Visibility = Visibility.Visible; PokemonTabItem.Visibility = Visibility; Loading.Visibility = Visibility.Collapsed; dockPani.Visibility = Visibility.Visible; }));
                         Dispatcher.BeginInvoke(new Action(() => tabs.SelectedIndex = 1));
                         Dispatcher.BeginInvoke(new Action(() => Loading.Opacity = 0));
                         Dispatcher.BeginInvoke(new Action(() => loaded[ausgewaehlterBot] = true));
@@ -450,9 +510,22 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
                                 Dispatcher.BeginInvoke(new Action(() => LoginFailed(true)));
                             }
                             Dispatcher.BeginInvoke(new Action(() => {
-                                Loading.Opacity = 0; tabs.SelectedIndex = 0;
+                                Loading.Visibility = Visibility.Collapsed; dockPani.Visibility = Visibility.Visible; tabs.SelectedIndex = 0;
                                 check = true; ThreadBot[ausgewaehlterBot].Abort();
                             }));
+                        } else
+                        if( _set.Auth.ProxyFailed == true)
+                        {
+                            Dispatcher.BeginInvoke(new Action(() => loadingMessages.Content = uebersetzer.GetTranslation(TranslationString.FixProxySettings))) ;
+                            Thread.Sleep(2000);
+                            Loading.Visibility = Visibility.Collapsed;
+                            dockPani.Visibility = Visibility.Visible;
+                            tabs.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            string[] loadMsg = message.Split('>');
+                            Dispatcher.BeginInvoke(new Action(() => loadingMessages.Content = loadMsg[1]));
                         }
                     }
                 }
@@ -472,102 +545,115 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
         #region changeLive
         public void changeLive(string liveMessage, string pokemonName, string pokemonId, double[] Coords, PokemonListe Pokemon)
         {
-            var uebersetzer = new PoGo.NecroBot.Logic.Common.Translation();
+            latestAction zs = show[6];
+            BitmapImage animatedSrc = new BitmapImage();
+            bool reset = false;
+            for (int h = 5; h >= 0; --h)
+            {
+                show[h + 1] = show[h];
+            }
             switch (liveMessage)
             {
                 case "caught":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Catch.gif")));
-                    candyImageOnHaupt.Source = Pokemon.CandySource;
-                    imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.caught, pokemonName);
-                    MapLayer imageLayer = new MapLayer();
-                    Image image = new Image();
-                    image.Height = 50;
-                    BitmapImage myBitmapImage = new BitmapImage();
-                    myBitmapImage.BeginInit();
-                    myBitmapImage.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png"));
-                    myBitmapImage.DecodePixelHeight = 50;
-                    myBitmapImage.EndInit();
-                    image.Source = myBitmapImage;
-                    image.Opacity = 0.9;
-                    image.Stretch = System.Windows.Media.Stretch.None;
-                    Microsoft.Maps.MapControl.WPF.Location location = new Microsoft.Maps.MapControl.WPF.Location(Coords[0], Coords[1]);
-                    PositionOrigin position = PositionOrigin.Center;
-                    imageLayer.AddChild(image, location, position);
-                    LoadingMap.Children.Add(imageLayer);
-                    lastCaughtImage.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png")));
-                    lastCaughtCP.Content = Pokemon.CP;
-                    lastCaughtIv.Content = Pokemon.IV;
-                    LastCaughtCandy.Content = Pokemon.Bonbon;
-                    lastCaughtCard.Visibility = Visibility.Visible;
-                    imgLiveActionPokemon.Source = lastCaughtImage.Source;
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.caught, pokemonName))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.caught, pokemonName), "Catch", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "moving":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Moving.gif")));
-                    imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.moving);
-                    imgLiveActionPokemon.Source = null;
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.moving))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.moving), "Moving", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "hatched":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Egg_hatched.gif")));
-                    imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.hatch, pokemonName); ;
-                    imgLiveActionPokemon.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png")));
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.hatch, pokemonName))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.hatch, pokemonName), "Egg_hatched", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "fight":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Fight.gif")));
-                    imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.fight, pokemonName);
-                    imgLiveActionPokemon.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png")));
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.fight, pokemonName))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.fight, pokemonName), "Fight", Visibility.Visible); 
+                    else reset = true;
                     break;
                 case "evolve":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Evolve.gif")));
-                    imgLiveAction_Label.Text = imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.evolve, pokemonName);
-                    imgLiveActionPokemon.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png")));
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.evolve, pokemonName))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.evolve, pokemonName), "Evolve", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "looting":
                     PokestopCounter++;
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Looting.gif")));
-                    imgLiveAction_Label.Text = "Looting PokeStop";
-                    VisitedPokestops.Content = "Visited Pokestops: " + PokestopCounter;
-                    MapLayer imageLayerNew = new MapLayer();
-                    Image imageNew = new Image();
-                    imageNew.Height = 50;
-                    BitmapImage myBitmapImageNew = new BitmapImage();
-                    myBitmapImageNew.BeginInit();
-                    myBitmapImageNew.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokestop.png"));
-                    myBitmapImageNew.DecodePixelHeight = 50;
-                    myBitmapImageNew.EndInit();
-                    imageNew.Source = myBitmapImageNew;
-                    imageNew.Opacity = 0.9;
-                    imageNew.Stretch = System.Windows.Media.Stretch.None;
-                    Microsoft.Maps.MapControl.WPF.Location locationNew = new Microsoft.Maps.MapControl.WPF.Location(Coords[0], Coords[1]);
-                    PositionOrigin positionNew = PositionOrigin.Center;
-                    imageLayerNew.AddChild(imageNew, locationNew, positionNew);
-                    LoadingMap.Children.Add(imageLayerNew);
-                    imgLiveActionPokemon.Source = null;
+                    if (show[1] == null || show[1].latestAction_label != "Looting")
+                    {
+                        show[0] = new latestAction("Looting", "Looting", Visibility.Visible);
+                        VisitedPokestops.Content = "Visited Pokestops: " + PokestopCounter;
+                    } else
+                    {
+                        reset = true;
+                    }
                     break;
                 case "softban":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Error.gif")));
-                    imgLiveAction_Label.Text = "Loading";
-                    imgLiveActionPokemon.Source = null;
+                    if (show[1] == null || show[1].latestAction_label != "Loading")
+                        show[0] = new latestAction("Loading", "Error", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "Error":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Error.gif")));
-                    imgLiveAction_Label.Text = "Error";
-                    imgLiveActionPokemon.Source = null;
+                    if (show[1] == null || show[1].latestAction_label != "Loading")
+                        show[0] = new latestAction("Loading", "Error", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "lootingFailed":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Error.gif")));
-                    imgLiveAction_Label.Text = "Looting Error";
-                    imgLiveActionPokemon.Source = null;
+                    if (show[1] == null || show[1].latestAction_label != "Looting Error")
+                        show[0] = new latestAction("Looting Error", "Error", Visibility.Visible);
+                    else reset = true;
                     break;
                 case "transfer":
-                    imgLiveAction = new BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "img/Event/Transfer.gif")));
-                    imgLiveAction_Label.Text = uebersetzer.GetTranslation(PoGo.NecroBot.Logic.Common.TranslationString.transfer, pokemonName); ;
-                    imgLiveActionPokemon.Source = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", pokemonId + ".png")));
+                    if (show[1] == null || show[1].latestAction_label != uebersetzer.GetTranslation(TranslationString.transfer, pokemonName))
+                        show[0] = new latestAction(uebersetzer.GetTranslation(TranslationString.transfer, pokemonName), "Transfer", Visibility.Visible);
+                    else reset = true;
+                    break;    
+                default:
+                    show[0] = new latestAction("", "", Visibility.Collapsed);
+                    reset = true;
                     break;
             }
-            WpfAnimatedGif.ImageBehavior.SetAnimatedSource(localImage, imgLiveAction);
+            if(reset == true)
+            {
+                for(int i = 0; i < 6; ++i)
+                {
+                    show[i] = show[i + 1];
+                }
+                show[6] = zs;
+            }
+            List<latestAction> showList = new List<latestAction>();
+            WpfAnimatedGif.ImageBehavior.SetAnimatedSource(localImage, show[0].MovingImage);
+            localImage_label.Content = show[0].latestAction_label;
+            for (int k = 1; k < 7; ++k)
+                showList.Add(show[k]);
+            latestActionShow.ItemsSource = showList;
         }
         #endregion
 
+        #region createPushpin
+
+        public void setPlayerPosition(double lat, double lng)
+        {
+            if (imageLayerNew != null) LoadingMap.Children.Remove(imageLayerNew);
+            Image imageNew = new Image();
+            string imgSource = "img/player_symbol.png";
+            imageNew.Height = 50;
+            BitmapImage myBitmapImageNew = new BitmapImage();
+            myBitmapImageNew.BeginInit();
+            myBitmapImageNew.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(), imgSource));
+            myBitmapImageNew.DecodePixelHeight = 50;
+            myBitmapImageNew.EndInit();
+            imageNew.Source = myBitmapImageNew;
+            imageNew.Opacity = 0.9;
+            imageNew.Stretch = System.Windows.Media.Stretch.None;
+            Microsoft.Maps.MapControl.WPF.Location locationNew = new Microsoft.Maps.MapControl.WPF.Location(lat, lng);
+            PositionOrigin positionNew = PositionOrigin.Center;
+            imageLayerNew.AddChild(imageNew, locationNew, positionNew);
+            Dispatcher.BeginInvoke(new Action(() => LoadingMap.Children.Add(imageLayerNew)));
+        }
+        #endregion
 
         #region GenerellEvent
 
@@ -590,6 +676,28 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
             }
         }
 
+        private void useLuckyEgg(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(async()=> {
+                int anzahlLucky = await bots[ausgewaehlterBot].session.Inventory.GetItemAmountByType(POGOProtos.Inventory.Item.ItemId.ItemLuckyEgg);
+                if (anzahlLucky == 0)
+                {
+                    ButtonUseLuckyEggWarning.Content = "No Lucky Eggs";
+                    return;
+                }
+                await bots[ausgewaehlterBot].session.Client.Inventory.UseItemXpBoost();
+            }));
+            string configPfad = Path.Combine(Directory.GetCurrentDirectory(), "Config", botNames[ausgewaehlterBot],"luckyEgg.ini");
+            luckyEggDauer = DateTime.Now;
+            luckyEggDauer = luckyEggDauer.AddMinutes(30);
+            luckyEggEnabled = true;
+            File.WriteAllText(configPfad, $"{luckyEggDauer.ToString()}");
+            BitmapImage img = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "image", "Lucky_Egg.png")));
+            WpfAnimatedGif.ImageBehavior.SetAnimatedSource(LuckyEggImage, img);
+            ButtonUseLuckyEgg.Visibility = Visibility.Collapsed;
+            LuckyEgg.Visibility = Visibility.Visible;
+        }
+
         private void stopBot_button(object sender, RoutedEventArgs e)
         {
             ausgewaehlterBot = ausgewaehlterBotCache;
@@ -605,8 +713,58 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
             Environment.Exit(-1);
         }
 
+        private void loginToAntim8(object sender, RoutedEventArgs e)
+        {
+            startPage.Visibility = Visibility.Collapsed;
+            LoginToWebsite.Visibility = Visibility.Visible;
+        }
+
+        private void LoginAntim8(object sender, RoutedEventArgs e)
+        {
+            string username = antim8username.Text;
+            string password = PasswordBoxAssistant.GetBoundPassword(antim8Password);
+            if(Requester.Login(username,password) == true)
+            {
+                isLogedInOnTheWeb = true;
+                LoginToWebsite.Visibility = Visibility.Collapsed;
+                SuccessMessage.Content = "Login Complete.";
+                SuccessfullyRegistered.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LoginError.Content = "Username / Password wrong";
+            }
+        }
+
+        private void RegisterFinalle(object sender, RoutedEventArgs e)
+        {
+            bool error = false;
+            if(antim8username.Text == "")
+            {
+                LoginError.Content = "Username must be set";
+                error = true;
+            }
+            if (PasswordBoxAssistant.GetBoundPassword(antim8Password) == "")
+            {
+                LoginError.Content = "Password must be set";
+                error = true;
+            }
+            if (error == true) return;
+            if (Requester.Register(antim8username.Text, PasswordBoxAssistant.GetBoundPassword(antim8Password)) == true)
+            {
+                LoginToWebsite.Visibility = Visibility.Collapsed;
+                isLogedInOnTheWeb = true;
+                SuccessfullyRegistered.Visibility = Visibility.Visible;
+            } else
+            {
+                LoginError.Content = "Error: Username already used";
+            }
+
+        }
+
         public void startitagain_Click(object sender, RoutedEventArgs e)
         {
+            SuccessfullyRegistered.Visibility = Visibility.Collapsed;
             ResetCoordsButton_Click(this, new RoutedEventArgs());
             SaveButton_Click(this, new RoutedEventArgs());
             timeElapsed.Visibility = Visibility.Collapsed;
@@ -643,7 +801,16 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
         {
             updateFinishGrid.Visibility = Visibility.Collapsed;
             timeElapsed.Visibility = Visibility.Collapsed;
-            dockPani.Visibility = Visibility.Visible;
+            if (Settings.PtcUsername == null && Settings.GoogleUsername == null)
+            {
+                quickGuidePos++;
+                dockPani.Visibility = Visibility.Collapsed;
+                quickStart.Visibility = Visibility.Visible;
+            } else
+            {
+                dockPani.Visibility = Visibility.Visible;
+            }
+            
         }
 
         private void switchBot_Click(object sender, RoutedEventArgs e)
@@ -673,8 +840,21 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
         public void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox box = sender as ComboBox;
-            if (box.SelectedIndex == 0) Iv = false;
-            else Iv = true;
+            if (loaded[ausgewaehlterBot] == false) return;
+            if ( box.SelectedIndex == 0)
+                Iv = false;
+            else
+                Iv = true;
+            Thread updateList = new Thread(updatePokeList);
+            updateList.Start();
+        }
+
+        public void updatePokeList()
+        {
+            if (Iv == false)
+                Dispatcher.BeginInvoke(new Action(() => pokemonListBox.ItemsSource = gui.PokemonList.OrderByDescending(o => o.CpForOrder).ToList()));
+            else
+                Dispatcher.BeginInvoke(new Action(() => pokemonListBox.ItemsSource = gui.PokemonList.OrderByDescending(o => o.IV).ToList()));
         }
 
         private void Window_Closed(object sender, System.ComponentModel.CancelEventArgs e)
@@ -685,8 +865,10 @@ bots[ausgewaehlterBot].Informations.PokemonID, bots[ausgewaehlterBot].Informatio
             }
             for (int i = 0; i < 8; i++)
             {
-                Dispatcher.BeginInvoke(new Action(() => { if (ThreadBot[i] != null) { ThreadBot[i].Abort(); Requester.closeBot(); } }));
+                Dispatcher.BeginInvoke(new Action(() => { if (ThreadBot[i] != null) { ThreadBot[i].Abort(); } }));
             }
+            Requester.closeBot();
+            Requester.returnKey(BingMapsApi.Text);
         }
         #endregion
     }

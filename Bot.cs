@@ -129,6 +129,7 @@ namespace WeezBot
         public Overlay updateUi(Boolean Iv)
         {
             updateEggs();
+            this.GraphicalInterface.setTeam(session.Profile.PlayerData.Team.ToString());
             getPokemons(Iv);
             return GraphicalInterface;
         }
@@ -182,7 +183,7 @@ namespace WeezBot
         private void Navigation_UpdatePositionEvent(double lat, double lng)
         {
             SaveLocationToDisk(lat, lng);
-            GraphicalInterface.setCoords(lat, lng);
+            this.GraphicalInterface.setCoords(lat, lng);
         }
 
         private void SaveLocationToDisk(double lat, double lng)

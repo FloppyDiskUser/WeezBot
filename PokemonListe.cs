@@ -27,6 +27,7 @@ namespace WeezBot
         public System.Windows.Media.Imaging.BitmapImage Icon { get; set; }
         public string Name { get; set; }
         public string CP { get; set; }
+        public int CpForOrder { get; set; }
         public string IV { get; set; }
         public string Bonbon { get; set; }
         public ulong id { get; set; }
@@ -59,7 +60,7 @@ namespace WeezBot
 
         public void setCp(int Cp, int maxCp)
         {
-            CP = Cp.ToString() + " / " + maxCp.ToString();
+            CP = (CpForOrder = Cp).ToString() + " / " + maxCp.ToString();
         }
 
         public void setIv(double Iv)

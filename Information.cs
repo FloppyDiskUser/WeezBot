@@ -23,13 +23,13 @@ namespace WeezBot
         private Dictionary<string, string> pokemonNameToId = new Dictionary<string, string>();
         public Boolean ErrorHappen;
         int counter = 0;
-        string Color = "White";
+        string Color = "Black";
 
         public Information()
         {
             for(int i = 0; i < 8; ++i)
             {
-                Messages[i] = new MessageDesign("","White");
+                Messages[i] = new MessageDesign("","Black");
             }
             List<KeyValuePair<int, string>> PokemonTranslationStrings = Uebersetzer._PokemonNameToId;
             foreach (var pokemon in PokemonTranslationStrings)
@@ -73,8 +73,8 @@ namespace WeezBot
         {
             if (level == LogLevel.Pokestop) Color = "Blue";
             else if (level == LogLevel.Caught) Color = "Green";
-            else if (level == LogLevel.Egg) Color = "Yellow";
-            else if (level != LogLevel.Flee) Color = "White";
+            else if (level == LogLevel.Egg) Color = "Lila";
+            else if (level != LogLevel.Flee) Color = "Purple";
               
             if (message == "User credentials are invalid") LoginError = true;
             else

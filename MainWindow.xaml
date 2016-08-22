@@ -13,7 +13,7 @@
                       xmlns:util="clr-namespace:WeezBot.Utils"
                       xmlns:model="clr-namespace:WeezBot.Model"
                       xmlns:rapi="clr-namespace:PokemonGo.RocketAPI.Enums;assembly=Pokemon.Go.Rocket.API"
-        Title="WeezBot[Pokemon Go Bot]" TitleForeground="black" TitleCharacterCasing="Normal" Height="700" Width="1360" FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"  
+        Title="WeezBot[Pokemon Go Bot]" TitleForeground="black" TitleCharacterCasing="Normal" Height="700" Width="1360" FontFamily="segoe ui light"  
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                       BorderThickness="1" Background="{DynamicResource MaterialDesignPaper}"
@@ -28,7 +28,10 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <Label x:Name="Version" Content="" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75"/>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Width="100">
+            <Label x:Name="Version" Content="" Width="80" HorizontalAlignment="Left" HorizontalContentAlignment="Left"/>
+            <Label Content="www.antim8.de" />
+        </StackPanel>
         <Grid x:Name="updateWindow" Visibility="Collapsed">
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -180,7 +183,50 @@
             </StackPanel>
         </Grid>
 
-        <DockPanel x:Name="dockPani" Visibility="Visible">
+        <StackPanel x:Name="startPage" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label FontFamily="Segoe Ui Light" FontSize="40" HorizontalAlignment="Center" Content="Your WeezBot is already configured" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label FontFamily="segoe ui light" FontSize="30" Content="Username:" />
+                <Label x:Name="startPageUsername" FontFamily="Segoe Ui Light" FontSize="30" Content="" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                <Button Content="Go To Configs" FontSize="40" Height="100" Width="400" Click="goToConfigs" />
+                <Button Content="Start Bot" FontSize="40" Height="100" Width="400" Click="button_Click" Margin="20,0,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <Button Content="Want to see live update Online?" Background="Gray" Click="loginToAntim8" Foreground="White"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid x:Name="LoginToWebsite"  Visibility="Collapsed">
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0" Height="50" FontSize="28" Content="Back To Start Screen" />
+            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,100" VerticalAlignment="Center">
+            <Label FontSize="40" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Content="Login to Antim8.de" Foreground="Gray" />
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" Style="{StaticResource LineItemPanel}">
+                <Label Style="{StaticResource LineItemLabel}" Content="Antim8 Username" />
+                <TextBox x:Name="antim8username" Style="{StaticResource LineItemTextBoxLg}" Text="" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Style="{StaticResource LineItemPanel}">
+                <Label Style="{StaticResource LineItemLabel}" Content="Antim8 Password" />
+                <PasswordBox x:Name="antim8Password" Width="200" model:PasswordBoxAssistant.BindPassword="True" model:PasswordBoxAssistant.BoundPassword="" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <Button Content="Register at Antim8.de" Click="RegisterFinalle" Width="200" />
+                <Button Content="Login" Margin="40,0,0,0" Width="200" Click="LoginAntim8" />
+            </StackPanel>
+            <Label x:Name="LoginError" Content="" Foreground="Red" Margin="0,20,0,0" FontSize="20" />
+        </StackPanel>
+        </Grid>
+
+        <StackPanel x:Name="SuccessfullyRegistered" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Label x:Name="SuccessMessage" Content="Your Registration is Completed" HorizontalAlignment="Center" FontSize="30" Foreground="Gray"/>
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center">
+                <Button Content="Go to Configs" FontSize="20" Height="40" Width="200" Click="KeepThisVersion" Background="Gray" Foreground="White"/>
+                <Button Content="Start Bot" FontSize="20" Height="40" Width="200" Background="Gray" Foreground="White" Click="startitagain_Click" Margin="20,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <DockPanel x:Name="dockPani" Visibility="Collapsed">
             <TabControl x:Name="tabs">
                 <TabItem Header="Config">
                     <DockPanel>
@@ -733,7 +779,7 @@
                                         <Label Style="{StaticResource LineItemLabel}" Content="Pokemon to evolve" ToolTip="Allows you to choose which Pokemon you want to Evolve automatically." />
                                     </StackPanel>
                                     <ScrollViewer MaxHeight="400" Width="1200" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,0,15,0">
-                                        <ItemsControl ItemsSource="{Binding Settings.EvolveCollection}" ItemTemplate="{StaticResource PokemonToggleTemplate}" >
+                                        <ItemsControl ItemsSource="{Binding Settings.EvolveCollection}" ItemTemplate="{StaticResource PokemonEvolveToggleTemplate}" >
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
                                                     <WrapPanel Orientation="Horizontal" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
@@ -785,9 +831,10 @@
                             </TabItem>
 
                             <TabItem Header="MutliBot">
-                                <StackPanel Width="1300">
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Width="700">
                                     <RadioButton x:Name="Bot1" Checked="RadioButton_Checked" IsChecked="True" Content="Bot1" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
-                                    <RadioButton x:Name="Bot2" Checked="RadioButton_Checked" Content="Bot2" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
+                                    <!--<RadioButton x:Name="Bot2" Checked="RadioButton_Checked" Content="Bot2" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
                                     <RadioButton x:Name="Bot3" Checked="RadioButton_Checked" Content="Bot3" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
                                     <RadioButton x:Name="Bot4" Checked="RadioButton_Checked" Content="Bot4" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
                                     <RadioButton x:Name="Bot5" Checked="RadioButton_Checked" Content="Bot5" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
@@ -795,6 +842,11 @@
                                     <RadioButton x:Name="Bot7" Checked="RadioButton_Checked" Content="Bot7" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
                                     <RadioButton x:Name="Bot8" Checked="RadioButton_Checked" Content="Bot8" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
                                     <RadioButton x:Name="Bot9" Checked="RadioButton_Checked" Content="Bot9" GroupName="BotAuswahl" FontSize="25" FontFamily="Segoe Ui light" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"/>
+                                    -->
+                                        </StackPanel>
+                                    <StackPanel Width="600" VerticalAlignment="Center">
+                                        <TextBlock TextWrapping="Wrap" FontSize="30">The MultiBot funktion is disabled. It'll be enabled when the proxy function works.</TextBlock>
+                                    </StackPanel>
                                 </StackPanel>
                             </TabItem>
 
@@ -804,81 +856,81 @@
                 </TabItem>
                 <TabItem Header="Bot" x:Name="BotTabItem" Visibility="Collapsed">
                     <Grid Width="1300" Margin="25,0,0,0">
-                        <materialDesign:Card Margin="5" Width="150" Height="155" HorizontalAlignment="Left">
-                            <Image x:Name="localImage" Source="img/Pokemon/110.png" Height="150" />
-
+                        <materialDesign:Card Background="Transparent" Width="150" Height="170" VerticalAlignment="Top" HorizontalAlignment="Left">
+                            <StackPanel>
+                                <Label x:Name="localImage_label" FontSize="14" Content="Loading" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
+                                <Image x:Name="localImage" Source="img/Pokemon/001.png" Height="130" />
+                                
+                            </StackPanel>
                         </materialDesign:Card>
-                        <materialDesign:Card Width="650" Height="150" HorizontalAlignment="Left" Margin="80,5,0,0">
+                        <materialDesign:Card Width="650" Height="150" HorizontalAlignment="Left" Margin="80,5,0,0" Background="Transparent">
                             <Grid>
-                                <StackPanel HorizontalAlignment="Center" Margin="100,20,0,0" Width="350" VerticalAlignment="Top">
-                                    <Label  HorizontalAlignment="Left" FontSize="35" Height="50" VerticalAlignment="Top" Foreground="Gray" x:Name="Nickname" />
+                                <StackPanel HorizontalAlignment="Center" Margin="100,0,0,0" Width="350" VerticalAlignment="Top">
+                                    <Label  HorizontalAlignment="Left" FontSize="35" Height="70" VerticalAlignment="Top" Foreground="Gray" x:Name="Nickname" />
                                     <Label  x:Name="Stardust"/>
                                     <Label x:Name="PokeballsTotal_Label" Content="Total Pokeballs: " />
+
                                 </StackPanel>
                                 <Image x:Name="TeamImage" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,25" Width="80" />
                                 <Label x:Name="TeamName" HorizontalAlignment="Right" Width="90" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,5,5" Foreground="Gray" />
-                                <Label x:Name="xp" HorizontalAlignment="Left" Width="100" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" FontSize="10" Margin="55,0,0,30"/>
-                                <ProgressBar x:Name="ProgressBar" Style="{StaticResource MaterialDesignCircularProgressBar}" Width="100" IsIndeterminate="True" VerticalAlignment="Top" HorizontalAlignment="left" Margin="56,41,0,0" Height="99" />
-                                <Label x:Name="Level" Foreground="Gray" FontSize="20" HorizontalAlignment="left" HorizontalContentAlignment="Center" Margin="5,70,0,0" VerticalAlignment="Top" Width="200"/>
+                                <Label x:Name="xp" HorizontalAlignment="Left" Width="100" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" FontSize="10" Margin="55,0,0,70"/>
+                                <ProgressBar x:Name="ProgressBar" Style="{StaticResource MaterialDesignCircularProgressBar}" Width="100" IsIndeterminate="True" VerticalAlignment="Top" HorizontalAlignment="left" Margin="56,1,0,0" Height="99" />
+                                <Label x:Name="Level" Foreground="Gray" FontSize="20" HorizontalAlignment="left" HorizontalContentAlignment="Center" Margin="5,30,0,0" VerticalAlignment="Top" Width="200"/>
                             </Grid>
                         </materialDesign:Card>
-                        <materialDesign:Card HorizontalAlignment="Left" Height="245" Width="725" Background="Black" VerticalAlignment="Center" Margin="5,0,0,50">
-                            <StackPanel>
-                                <Label x:Name="Command8" Foreground="White" Content=""/>
-                                <Label x:Name="Command7" Foreground="White" Content=""/>
-                                <Label x:Name="Command6" Foreground="White" Content=""/>
-                                <Label x:Name="Command5" Foreground="White" Content=""/>
-                                <Label x:Name="Command4" Foreground="White" Content=""/>
-                                <Label x:Name="Command3" Foreground="White" Content=""/>
-                                <Label x:Name="Command2" Foreground="White" Content=""/>
-                                <Label x:Name="Command1" Foreground="White" Content=""/>
-                            </StackPanel>
-                        </materialDesign:Card>
-                        <materialDesign:Card Width="550" Height="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,0,0">
+                        
+                        <StackPanel HorizontalAlignment="Left" Height="260" Width="725" VerticalAlignment="Center" Margin="5,10,0,50">
+                            <Canvas>
+                                <Line X1='0' X2='700' Y1="0" Y2="0" Stroke="Gray" StrokeThickness="2"></Line>
+                            </Canvas>
+                            <Label x:Name="Command8" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command7" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command6" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command5" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command4" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command3" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command2" FontSize="12" Foreground="Gray" Content=""/>
+                            <Label x:Name="Command1" FontSize="12" Foreground="Gray" Content=""/>
+                            <Canvas>
+                                <Line X1='0' X2='700' Y1="0" Y2="0" Stroke="Gray" StrokeThickness="2"></Line></Canvas>
+                        </StackPanel>
+                        <materialDesign:Card Width="550" Height="360" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,0,0">
                             <StackPanel>
                                 <Label x:Name="locationUnder" Width="500" Content="{Binding MapLabel}" Foreground="Gray" FontFamily="Segoe Ui Light" FontSize="15"/>
-                                <m:Map Focusable="False" x:Name="LoadingMap" Height="560"  Width="540" Center="34.0091339,-118.4992379" HorizontalAlignment="Center" VerticalAlignment="Center" ZoomLevel="16" Margin="0,0,0,0">
+                                <m:Map Focusable="False" x:Name="LoadingMap" Height="300"  Width="540" Center="34.0091339,-118.4992379" HorizontalAlignment="Center" VerticalAlignment="Center" ZoomLevel="16" Margin="0,0,0,0">
                                     <Image x:Name="playerSymbol" Width="50" Height="50"/>
                                 </m:Map>
-                                <Label x:Name="VisitedPokestops" Content="" Foreground="Gray" FontFamily="Segoe Ui Light" FontSize="15"/>
+                                
                             </StackPanel>
                         </materialDesign:Card>
-                        <materialDesign:Card Width="725" Height="250" Margin="5,0,0,10" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Width="1300" Height="250" Margin="5,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                            <ListBox Background="Transparent" Width="1080" Height="250" BorderThickness="0" x:Name="latestActionShow" >
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="x:Type local:latestAction">
+                                    <StackPanel Visibility="{Binding seeable}" Background="Transparent" VerticalAlignment="Center" Width="150" Height="200" Margin="10,0,0,0" HorizontalAlignment="Center">
+                                        <TextBlock TextWrapping="Wrap" Height="80" Foreground="Green" Width="150" TextAlignment="Center" Text="{Binding latestAction_label}"  FontSize="20" HorizontalAlignment="Center"/>
+                                        <Image Height="90" Name="Image" Source="{Binding MovingImage}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                            <Canvas>
+                                <Line X1="0" X2="0" Y1="0" Y2="240" Stroke="Gray" StrokeThickness="2"/>
+                            </Canvas>
+                            <StackPanel Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="LuckyEgg">
+                                <Label x:Name="LuckyEggLabel" FontSize="25" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Content="30.00 Min" />
+                                <Image x:Name="LuckyEggImage" HorizontalAlignment="Center" Height="150"/>
+                            </StackPanel>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Height="230" HorizontalAlignment="Left">
-                                    <materialDesign:Card x:Name="lastCaughtCard" VerticalAlignment="Center" Width="360" Margin="10,0,0,0" Foreground="Gray" Visibility="Hidden">
-                                        <Grid>
-                                            <Label x:Name="LastCaughtCandy" Content="1000" Foreground="Black" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Panel.ZIndex="3"  Width="60" Height="60" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,40,60,0" />
-                                            <Image x:Name="candyImageOnHaupt" Width="60" Height="60" VerticalAlignment="Top" Panel.ZIndex="2" HorizontalAlignment="Center" Margin="0,40,60,0" />
-                                            <StackPanel>
-                                                <Label Content="Recently caught" Foreground="Gray" FontSize="22"/>
-                                                <StackPanel Orientation="Horizontal" >
-                                                    <Image x:Name="lastCaughtImage" Panel.ZIndex="1" HorizontalAlignment="Left" Source="img/Pokemon/001.png" Width="170"/>
-                                                    <StackPanel VerticalAlignment="Center">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label Content="IV:" Width="50" FontSize="20" />
-                                                            <Label x:Name="lastCaughtIv" Content="100.00 %" FontSize="20" />
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label Content="CP:" Width="50" FontSize="20" />
-                                                            <Label x:Name="lastCaughtCP" Content="1001 / 2000" FontSize="20" />
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </materialDesign:Card>
-                                    <materialDesign:Card VerticalAlignment="Center" Width="320" Height="205" Margin="10,0,0,0">
-                                        <StackPanel>
-                                            <Label Content="Latest Move" HorizontalAlignment="Center" Foreground="Gray" FontSize="22"/>
-                                            <TextBlock x:Name="imgLiveAction_Label" Height="80" Foreground="Green" Width="310" TextAlignment="Center" TextWrapping="Wrap"  Text="Moving"  FontSize="30" HorizontalAlignment="Center"/>
-                                            <Image x:Name="imgLiveActionPokemon" Height="90" Source="img/Pokemon/004.png"/>
-                                        </StackPanel>
-                                    </materialDesign:Card>
-                                </StackPanel>
-
+                                <Button x:Name="ButtonUseLuckyEgg" Content="Use Lucky Egg" Width="200" Margin="5,0,0,0" Click="useLuckyEgg" HorizontalContentAlignment="Center" Height="50"/>
+                                <Label Foreground="Red" x:Name="ButtonUseLuckyEggWarning" Content="" />
                             </StackPanel>
-                        </materialDesign:Card>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left">
                             <Label Content="Runtime:" />
                             <Label x:Name="RuntimeLabel" Content="5" />
@@ -888,6 +940,7 @@
                                 <Label Content="Closing in:" Margin="10,0,0,0"/>
                                 <Label x:Name="ClosingInMinutes" Content="5" />
                                 <Label Content=" Minutes" />
+                                <Label x:Name="VisitedPokestops" Content="Pokestops Visited:" Margin="10,0,0,0" Foreground="Gray" FontFamily="Segoe Ui Light" FontSize="15"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -930,23 +983,34 @@
 
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="x:Type local:PokemonsList">
-                                        <materialDesign:Card Margin="0,0,10,0" Width="220" Height="280">
-                                            <Grid>
-                                                <Label FontSize="20" Panel.ZIndex="3" Content="{Binding Bonbon}" Foreground="Black" Height="60" Width="60" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,10,10,0" HorizontalContentAlignment="Center">
+                                        <materialDesign:Card Background="Transparent" Margin="0,0,10,0" Width="220" Height="280">
+                                            <StackPanel>
+                                                
+                                                <Label Content="{Binding Name}" FontSize="26"  Height="50" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Foreground="Gray" />
+                                                <Grid>
+                                                    <Label FontSize="20" Panel.ZIndex="3" Content="{Binding Bonbon}" Foreground="Black" Height="60" Width="60" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,10,10,0" HorizontalContentAlignment="Center">
                                                 </Label>
                                                 <Image Source="{Binding CandySource}" Panel.ZIndex="2"  Height="60" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0"/>
-                                                <Image Width="150" Panel.ZIndex="1" Source="{Binding Icon}" VerticalAlignment="Top"/>
-                                                <Label Content="{Binding Name}" FontSize="24" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="40" Foreground="Gray" Margin="0,0,0,90" />
-                                                <Label Content="CP:" FontSize="18" VerticalAlignment="Bottom" Height="40" Foreground="Gray" Margin="0,0,0,60" />
-                                                <Label Content="{Binding CP}" VerticalAlignment="Bottom" FontSize="18" Width="150" Height="40" Foreground="Gray" HorizontalContentAlignment="Left" Margin="60,0,0,60" HorizontalAlignment="Center"/>
-                                                <Label Content="IV:" FontSize="18" VerticalAlignment="Bottom" Height="40" Foreground="Gray" Margin="0,0,0,40" />
-                                                <Label Content="{Binding IV}" FontSize="18" VerticalAlignment="Bottom" Width="150" Height="40" Foreground="Gray" HorizontalContentAlignment="Left" Margin="60,0,0,40" HorizontalAlignment="Center"/>
-                                                <Label Content="{Binding Move1}" FontSize="18" VerticalAlignment="Bottom" Width="150" Height="40" Foreground="Gray" HorizontalContentAlignment="Left" Margin="60,20,0,20" HorizontalAlignment="Center"/>
-                                                <Label Content="{Binding Move2}" FontSize="18" VerticalAlignment="Bottom" Width="150" Height="40" Foreground="Gray" HorizontalContentAlignment="Left" Margin="60,20,0,0" HorizontalAlignment="Center"/>
-                                                <Label Content="Move1:"  FontSize="18" VerticalAlignment="Bottom" Height="40" Foreground="Gray" Margin="0,40,0,20" />
-                                                <Label Content="Move2:"  FontSize="18" VerticalAlignment="Bottom" Height="40" Foreground="Gray" Margin="0,80,0,0"/>
+                                                <Image Width="100" Panel.ZIndex="1" Source="{Binding Icon}" VerticalAlignment="Top"/>
+                                                </Grid>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="CP:" FontSize="18" Height="30" Width="75" Foreground="Gray" />
+                                                    <Label Content="{Binding CP}" FontSize="18" Width="150" Height="30" Foreground="Gray" HorizontalContentAlignment="Left" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="IV:" FontSize="18" Height="30" Width="75" Foreground="Gray" />
+                                                    <Label Content="{Binding IV}" FontSize="18" Width="150" Height="30" Foreground="Gray" HorizontalContentAlignment="Left" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Move1:"  FontSize="18" Height="30" Width="75"  Foreground="Gray" />
+                                                    <Label Content="{Binding Move1}" FontSize="18" Width="150" Height="30" Foreground="Gray" HorizontalContentAlignment="Left" HorizontalAlignment="Center"/>
+                                                    </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="Move2:"  FontSize="18" Height="30" Width="75" Foreground="Gray"/>
+                                                    <Label Content="{Binding Move2}" FontSize="18"  Width="150" Height="30" Foreground="Gray" HorizontalContentAlignment="Left" HorizontalAlignment="Center"/>
+                                                </StackPanel>
                                                 <Label Visibility="Collapsed" Name="id" Content="{Binding id}" />
-                                            </Grid>
+                                            </StackPanel>
                                         </materialDesign:Card>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -955,8 +1019,11 @@
                     </StackPanel>
                 </TabItem>
             </TabControl>
-            <Controls:ProgressRing x:Name="Loading" Opacity="0" />
         </DockPanel>
+        <StackPanel x:Name="Loading" Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,0,60" HorizontalAlignment="Center">
+            <Label x:Name="loadingMessages" Content="Loading" FontSize="70" Margin="0,40,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe ui light" />
+            <Controls:ProgressRing Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </StackPanel>
         <Grid x:Name="timeElapsed" Visibility="Collapsed">
             <Label Content="Time is Up!" FontFamily="Segoe Ui light" FontSize="65" Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" Height="100" Margin="0,100,0,0" Width="950" HorizontalAlignment="Center" VerticalAlignment="Center">

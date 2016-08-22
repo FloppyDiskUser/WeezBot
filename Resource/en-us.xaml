@@ -73,7 +73,17 @@
             <StackPanel>
                 <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
                 <Image Source="{Binding imageSource}" Height="100" />
-                <Controls:ToggleSwitch OffLabel="Keep" OnLabel="Transfer" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
+                <Controls:ToggleSwitch OffLabel="Transfer" OnLabel="Keep" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </DataTemplate>
+
+    <DataTemplate x:Key="PokemonEvolveToggleTemplate" DataType="PokemonToggle">
+        <materialDesign:Card Margin="0,10,10,0" Width="220" Height="180">
+            <StackPanel>
+                <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
+                <Image Source="{Binding imageSource}" Height="100" />
+                <Controls:ToggleSwitch OffLabel="Keep" OnLabel="Evolve" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
             </StackPanel>
         </materialDesign:Card>
     </DataTemplate>

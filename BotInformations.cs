@@ -7,11 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace WeezBot
 {
+    public class latestAction
+    {
+        public string latestAction_label { get; set; }
+        public BitmapImage MovingImage { get; set; }
+        public Visibility seeable { get; set; }
+
+        public latestAction(string label, string pfad, Visibility visible)
+        {
+            this.seeable = visible;
+            this.latestAction_label = label;
+            setImage(pfad);
+        }
+
+        public void setImage(string eventName)
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(),"img","Event",eventName+".gif"));
+            image.EndInit();
+            MovingImage = image;
+        }
+    }
+
     public class Languages
     {
         public List<string> LanguageStringToCode = new List<string>();
@@ -106,6 +130,7 @@ namespace WeezBot
         public void setCoords(double lat, double lng)
         {
             MapLabel = "Latitude: " + (this.currentLat = lat) + " , Longitude: " + (this.currentLng = lng);
+            Position = new Location(lat, lng);
         }
 
         public void setPokeImg(string PokemonName)

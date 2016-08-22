@@ -4,7 +4,7 @@
   <description asmv2:iconFile="weezingIcon.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="WeezBot" version="1.1.5.0" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="WeezBot" version="1.1.8.0" language="neutral" processorArchitecture="msil" />
     <commandLine file="WeezBot.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -314,19 +314,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>JGwqQTNwxgSjtOkItGhHaP1XQq9K5a7KqI3vLK6WqPE=</dsig:DigestValue>
+        <dsig:DigestValue>vPnGfIMpMK/uxucRVoOrz4opT9h1J8xhtjupARtRLR0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="POGOProtos.dll" size="954880">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="POGOProtos.dll" size="956416">
       <assemblyIdentity name="POGOProtos" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>PlRGG5O7N6q7wgMbjum+IiEXpeZfyygcoeSFlCq3jk8=</dsig:DigestValue>
+        <dsig:DigestValue>yOa+ZEar7Ag0reezJ415iZ9e4wDpjdrQqrIbunpd94I=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -338,7 +338,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>VaA0nQVAVgilnhcipS0s6qeyAVDM9sQ6jowpkkh/tgk=</dsig:DigestValue>
+        <dsig:DigestValue>btUS5lgfaTvvL9Aahur+EO3uq2VdELBlH8a9O4+0V8k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -643,14 +643,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WeezBot.exe" size="403432">
-      <assemblyIdentity name="WeezBot" version="1.1.5.0" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WeezBot.exe" size="412648">
+      <assemblyIdentity name="WeezBot" version="1.1.8.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>RqsAsEoresXJ+Qj1sOIaa9rF58xzHePx0CbtxqtCtP4=</dsig:DigestValue>
+        <dsig:DigestValue>1OBXRlWpOhppYi7SXALcI3BEBndyRekQChSWaidNer0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -666,13 +666,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="WeezBot.exe.config" size="3334">
+  <file name="WeezBot.exe.config" size="3574">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>WDDfPYleu9anT15oCk1vLXkZ5u2ev+OBpQo8fc9SvpE=</dsig:DigestValue>
+      <dsig:DigestValue>kIAjkFskZkn3D+c703gx0Jfq5xtNUntkQRCZ5jXhUNo=</dsig:DigestValue>
     </hash>
   </file>
   <file name="weezingIcon.ico" size="99678">
