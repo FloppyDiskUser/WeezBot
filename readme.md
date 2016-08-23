@@ -47,8 +47,11 @@ Linked The antim8 brandmark in the corner
 ## Credits
 ©FloppyDiskUser
 and special thanks to:
+
 NecroBot
+
 RocketApi
+
 POGOProtos
 
 
