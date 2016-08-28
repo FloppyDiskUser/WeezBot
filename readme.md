@@ -1,48 +1,27 @@
 <snippet>
   <content>
-# Weezbot
+## Weezbot
 weezbot is s Pokemon Go bot. It farms pokestops, transfers unwanted pokemon for candies, etc.
-## Installation
 
-Step 1: Download the file, extract the folder to your desktop
+### Functions
+```sh
+- Graphical Interface
+- Farming Pokestops
+- Catching Pokemon
+- Select Position by Address
+- Integrated Pokemon Nests ( by pkmngotrading.com )
+- Easy To Use Interface
+- Supports Multibot
+```
 
-Step 2: Dab
+### Images
 
-## Usage
-
-
-Step 1: Run WeezBot.exe
-
-Step 2: Once it opens, put in your login information
-
-Step 3: Press "Next"
-
-Step 4: Press "Start Bot"
-
-## Contributing
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
-
-## History
-
--V1.0.0
-released
-
--V1.1.0
-
--V1.2.0
-Added Manually Transfer Pokemon
-Added Manually Evolve Pokemon
-Added Manually Level Up Pokemon
-Added Pokemon Not to Catch filter
-
-v1.2.1
-Added Recently Caught Tab
-Enabled Multibot again
-Linked The antim8 brandmark in the corner
+![img1](https://cloud.githubusercontent.com/assets/21108606/18036834/b6055e3e-6d75-11e6-97eb-71a69b096d2c.PNG)
+![img2](https://cloud.githubusercontent.com/assets/21108606/18036835/cc28d042-6d75-11e6-8d1f-d70f9c911af5.PNG)
+![img3](https://cloud.githubusercontent.com/assets/21108606/18036836/d740b8e6-6d75-11e6-8e7a-d8e89eee94d1.PNG)
+![img4](https://cloud.githubusercontent.com/assets/21108606/18036850/02de3df2-6d76-11e6-9f50-d27c342cddc9.PNG)
+![img7](https://cloud.githubusercontent.com/assets/21108606/18036854/0dd36322-6d76-11e6-9fab-d813ca939048.PNG)
+![img6](https://cloud.githubusercontent.com/assets/21108606/18036863/29993384-6d76-11e6-8710-e90f7d167d6c.PNG)
 
 ## Credits
 ©FloppyDiskUser
