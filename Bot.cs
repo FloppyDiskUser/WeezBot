@@ -16,10 +16,11 @@ using POGOProtos.Data.Player;
 using POGOProtos.Data;
 using PoGo.NecroBot.Logic.PoGoUtils;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace WeezBot
 {
-    class Bot
+    public class Bot
     {
 
         /// <summary>
@@ -54,6 +55,7 @@ namespace WeezBot
             PoGo.NecroBot.Logic.GlobalSettings Einstellungen = new PoGo.NecroBot.Logic.GlobalSettings();
 
             List<KeyValuePair<int, string>> PokemonTranslationStrings = Uebersetzer._PokemonNameToId;
+            pokemonNameToId["missingno"] = "001";
             foreach (var pokemon in PokemonTranslationStrings)
             {
                 string pomoName = pokemon.Key.ToString();
@@ -79,12 +81,12 @@ namespace WeezBot
             session = new Session(new ClientSettings(Einstellungen), new LogicSettings(Einstellungen));
             session.Client.ApiFailure = new ApiFailureStrategy(session);
             var stats = new Statistics();
-            
+
 
             stats.DirtyEvent += () =>
             {
                 isLoaded = true;
-                this.GraphicalInterface.updateData(stats.getNickname().ToString(), stats.getLevel().ToString(), stats.getNeedXp(), stats.getTotalXp(), stats.getStardust().ToString(), Math.Round(stats.GetRuntime(),3).ToString());
+                this.GraphicalInterface.updateData(stats.getNickname().ToString(), stats.getLevel().ToString(), stats.getNeedXp(), stats.getTotalXp(), stats.getStardust().ToString(), Math.Round((stats.GetRuntime()*60),3).ToString());
             };
                 
             var aggregator = new StatisticsAggregator(stats);
@@ -101,12 +103,17 @@ namespace WeezBot
             Einstellungen.checkProxy(session.Translation);
         }
 
-        public void getPokemons(Boolean Iv = false)
+        private async Task updatePokemonByServer(Boolean Iv = false)
+        {
+            await pokemonDisplay.RefreshPokemonList(Iv);
+        }
+
+        private void getPokemons(Boolean Iv = false)
         {
             List<PokemonListe> pokemonlist = new List<PokemonListe>();
-            pokemonDisplay.RefreshPokemonList(Iv);
             List<PokemonData> Pokemons = pokemonDisplay.Liste;
             if (Pokemons == null) return ;
+            
             List<POGOProtos.Inventory.Candy> myPokemonFamilies = pokemonDisplay.FamilieListe;
             IEnumerable<POGOProtos.Settings.Master.PokemonSettings> myPokeSettings = pokemonDisplay.PokeSettingListe;
             foreach (var Poke in Pokemons)
@@ -115,7 +122,7 @@ namespace WeezBot
                 pok.setCp(Poke.Cp, PokemonInfo.CalculateMaxCp(Poke));
                 pok.setId(Poke.Id);
                 string pfad = pokemonNameToId[Poke.PokemonId.ToString()].ToString();
-                pok.setIcon("img/Pokemon/" + pfad + ".png");
+                pok.setIcon("Images/Models/" + pfad + ".png");
                 pok.Name = session.Translation.GetPokemonTranslation(Poke.PokemonId).ToString();
                 pok.Move1 = session.Translation.GetPokemonMovesetTranslation(Poke.Move1).ToString();
                 pok.Move2 = session.Translation.GetPokemonMovesetTranslation(Poke.Move2).ToString();
@@ -126,11 +133,25 @@ namespace WeezBot
             GraphicalInterface.PokemonList = pokemonlist;
         }
 
+        public void updatePokemons(Boolean Iv = false)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(async () => await updatePokemonByServer(Iv)));
+            getPokemons(Iv);
+        }
+
+        public void updateSortList(bool SortByIv)
+        {
+            if (SortByIv == false)
+                GraphicalInterface.PokemonList = GraphicalInterface.PokemonList.OrderByDescending(o => o.CpForOrder).ToList();
+            else
+                GraphicalInterface.PokemonList = GraphicalInterface.PokemonList.OrderByDescending(o => o.IV).ToList();
+        }
+
         public Overlay updateUi(Boolean Iv)
         {
             updateEggs();
             this.GraphicalInterface.setTeam(session.Profile.PlayerData.Team.ToString());
-            getPokemons(Iv);
+            if (GraphicalInterface.PokemonList == null) updatePokemons();
             return GraphicalInterface;
         }
 
@@ -179,11 +200,12 @@ namespace WeezBot
             GraphicalInterface.EggLists = eggs;
             return;
         }
+        
 
         private void Navigation_UpdatePositionEvent(double lat, double lng)
         {
             SaveLocationToDisk(lat, lng);
-            this.GraphicalInterface.setCoords(lat, lng);
+            GraphicalInterface.setCoords(lat, lng);
         }
 
         private void SaveLocationToDisk(double lat, double lng)

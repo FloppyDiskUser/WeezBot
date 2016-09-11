@@ -121,6 +121,21 @@ namespace WeezBot.Model
 
         #region BASIC Properties
 
+        public bool enableSchedule
+        {
+            get;set;
+        }
+
+        public DateTime StartBotTime
+        {
+            get; set;
+        }
+
+        public DateTime StopBotTime
+        {
+            get;set;
+        }
+        
         public string TranslationLanguageCode
         {
             get { return (string)GetValue(TranslationLanguageCodeProperty); }
@@ -277,6 +292,23 @@ namespace WeezBot.Model
         }
         public static readonly DependencyProperty PtcPasswordProperty =
             DependencyProperty.Register("PtcPassword", typeof(string), typeof(ObservableSettings), new PropertyMetadata(string.Empty));
+
+        public string antim8username
+        {
+            get { return (string)GetValue(antim8usernameProperty); }
+            set { SetValue(antim8usernameProperty, value); }
+        }
+        public static readonly DependencyProperty antim8usernameProperty =
+            DependencyProperty.Register("antim8username", typeof(string), typeof(ObservableSettings), new PropertyMetadata(string.Empty));
+
+        public string antim8password
+        {
+            get { return (string)GetValue(antim8passwordProperty); }
+            set { SetValue(antim8passwordProperty, value); }
+        }
+        public static readonly DependencyProperty antim8passwordProperty =
+            DependencyProperty.Register("antim8password", typeof(string), typeof(ObservableSettings), new PropertyMetadata(string.Empty));
+
 
         public bool UseProxy
         {
@@ -1304,6 +1336,15 @@ namespace WeezBot.Model
         public static readonly DependencyProperty MasterballCollectionProperty =
             DependencyProperty.Register("MasterballCollection", typeof(ObservableCollection<PokemonToggle>), typeof(ObservableSettings), new PropertyMetadata(null));
 
+        public ObservableCollection<PokemonToggle> PokemonToSnipeCollection
+        {
+            get { return (ObservableCollection<PokemonToggle>)GetValue(PokemonToSnipeCollectionProperty); }
+            set { SetValue(PokemonToSnipeCollectionProperty, value); }
+        }
+        public static readonly DependencyProperty PokemonToSnipeCollectionProperty =
+            DependencyProperty.Register("PokemonToSnipeCollection", typeof(ObservableCollection<PokemonToggle>), typeof(ObservableSettings), new PropertyMetadata(null));
+
+
         public Dictionary<PokemonId, TransferFilter> PokemonsTransferFilter
         {
             get { return (Dictionary<PokemonId, TransferFilter>)GetValue(PokemonsTransferFilterProperty); }
@@ -1329,6 +1370,7 @@ namespace WeezBot.Model
             UpgradeCollection = new ObservableCollection<PokemonToggle>();
             IgnoreCollection = new ObservableCollection<PokemonToggle>();
             MasterballCollection = new ObservableCollection<PokemonToggle>();
+            PokemonToSnipeCollection = new ObservableCollection<PokemonToggle>();
             PokemonsTransferFilter = new Dictionary<PokemonId, TransferFilter>();
             ItemRecycleFilter = new List<KeyValuePair<ItemId, int>>();
         }
@@ -1364,6 +1406,9 @@ namespace WeezBot.Model
         {
             ObservableSettings res = new ObservableSettings();
             // BASIC
+            res.enableSchedule = set.enableSchedule;
+            res.StartBotTime = set.StartBotTime;
+            res.StopBotTime = set.StopBotTime;
             res.TranslationLanguageCode = set.TranslationLanguageCode;
             res.AutoUpdate = set.AutoUpdate;
             res.TransferConfigAndAuthOnUpdate = set.TransferConfigAndAuthOnUpdate;
@@ -1514,6 +1559,7 @@ namespace WeezBot.Model
                     res.UpgradeCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToLevelUp && set.PokemonsToLevelUp.Contains(pid)), trans.GetPokemonTranslation(pid)));
                     res.IgnoreCollection.Add(new PokemonToggle(pid, (null != set.PokemonsToIgnore && set.PokemonsToIgnore.Contains(pid)), trans.GetPokemonTranslation(pid)));
                     res.MasterballCollection.Add(new PokemonToggle(pid, (null != set.PokemonToUseMasterball && set.PokemonToUseMasterball.Contains(pid)), trans.GetPokemonTranslation(pid)));
+                    res.PokemonToSnipeCollection.Add(new Model.PokemonToggle(pid, (null != set.PokemonToSnipe && set.PokemonToSnipe.Contains(pid)), trans.GetPokemonTranslation(pid)));
                 }
             }
             foreach (PokemonId key in set.PokemonsTransferFilter.Keys)
@@ -1530,6 +1576,9 @@ namespace WeezBot.Model
         {
             GlobalSettings gs = new GlobalSettings();
             // BASIC
+            gs.enableSchedule = enableSchedule;
+            gs.StartBotTime = StartBotTime;
+            gs.StopBotTime = StopBotTime;
             gs.TranslationLanguageCode = TranslationLanguageCode;
             gs.AutoUpdate = AutoUpdate;
             gs.TransferConfigAndAuthOnUpdate = TransferConfigAndAuthOnUpdate;
@@ -1670,6 +1719,8 @@ namespace WeezBot.Model
             gs.PokemonToSnipe = PokemonToSnipe;
             gs.PokemonsNotToTransfer.Clear();
             foreach (PokemonToggle pt in NoTransferCollection) if (pt.IsChecked) gs.PokemonsNotToTransfer.Add(pt.Id);
+            gs.PokemonToSnipe.Clear();
+            foreach (PokemonToggle pt in PokemonToSnipeCollection) if (pt.IsChecked) gs.PokemonToSnipe.Add(pt.Id);
             gs.PokemonsToEvolve.Clear();
             foreach (PokemonToggle pt in EvolveCollection) if (pt.IsChecked) gs.PokemonsToEvolve.Add(pt.Id);
             gs.PokemonsToLevelUp.Clear();
@@ -1749,7 +1800,7 @@ namespace WeezBot.Model
             if (idStr.Length > 2) finalStr = idStr;
             if (idStr.Length == 2) finalStr = "0" + idStr;
             if (idStr.Length == 1) finalStr = "00" + idStr;
-            imageSource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", finalStr + ".png")));
+            imageSource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "Models", finalStr + ".png")));
             IsChecked = isChecked;
         }
 

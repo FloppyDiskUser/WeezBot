@@ -24,7 +24,7 @@ namespace WeezBot
 
     public class PokemonListe
     {
-        public System.Windows.Media.Imaging.BitmapImage Icon { get; set; }
+        public BitmapImage Icon { get; set; }
         public string Name { get; set; }
         public string CP { get; set; }
         public int CpForOrder { get; set; }
@@ -34,10 +34,12 @@ namespace WeezBot
         public string Move1 { get; set; }
         public string Move2 { get; set; }
         public BitmapImage CandySource { get; set; }
+        public DateTime catchTime { get; set; }
+        public Uri IconAn { get; set;}
 
         public PokemonListe()
         {
-            CandySource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Candy.png")));
+            CandySource = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "Candy.png")));
         }
 
         public void setAll(string Name, string CP, string IV, string Bonbon, ulong id, string move1, string move2, string pfad)
@@ -55,7 +57,12 @@ namespace WeezBot
         public void setIcon(string pfad)
         {
             if(File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(), pfad)))
-                Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), pfad)));
+                Icon = new BitmapImage(IconAn = new Uri(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), pfad)));
+        }
+
+        public void setCatchTime()
+        {
+            catchTime = DateTime.Now;
         }
 
         public void setCp(int Cp, int maxCp)

@@ -13,67 +13,6 @@ using System.Windows.Media.Imaging;
 
 namespace WeezBot
 {
-    public class latestAction
-    {
-        public string latestAction_label { get; set; }
-        public BitmapImage MovingImage { get; set; }
-        public Visibility seeable { get; set; }
-
-        public latestAction(string label, string pfad, Visibility visible)
-        {
-            this.seeable = visible;
-            this.latestAction_label = label;
-            setImage(pfad);
-        }
-
-        public void setImage(string eventName)
-        {
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(),"img","Event",eventName+".gif"));
-            image.EndInit();
-            MovingImage = image;
-        }
-    }
-
-    public class Languages
-    {
-        public List<string> LanguageStringToCode = new List<string>();
-
-
-        public Languages()
-        {
-            LanguageStringToCode.Add("ca");
-            LanguageStringToCode.Add("cs");
-            LanguageStringToCode.Add("da");
-            LanguageStringToCode.Add("et");
-            LanguageStringToCode.Add("de");
-            LanguageStringToCode.Add("es");
-            LanguageStringToCode.Add("gr");
-            LanguageStringToCode.Add("fr");
-            LanguageStringToCode.Add("hu");
-            LanguageStringToCode.Add("id");
-            LanguageStringToCode.Add("it");
-            LanguageStringToCode.Add("lt");
-            LanguageStringToCode.Add("nl");
-            LanguageStringToCode.Add("no");
-            LanguageStringToCode.Add("pl");
-            LanguageStringToCode.Add("pt-br");
-            LanguageStringToCode.Add("ro");
-            LanguageStringToCode.Add("ru_RU");
-            LanguageStringToCode.Add("sv");
-            LanguageStringToCode.Add("th");
-            LanguageStringToCode.Add("tr");
-            LanguageStringToCode.Add("uk_UA");
-            LanguageStringToCode.Add("vi");
-            LanguageStringToCode.Add("zh_CN");
-        }          
-
-        public List<string> getLang()
-        {
-            return LanguageStringToCode;
-        }
-    }
 
 
     public class MessageDesign
@@ -106,15 +45,18 @@ namespace WeezBot
         public BitmapImage TeamImage { get; set; }
         public string liveActionLabel { get; set; }
         public BitmapImage PokemonImage { get; set; }
+        public BitmapImage ProfileImage { get; set; }
         public double currentLat { get; set; }
         public double currentLng { get; set; }
         public Location Position { get; set; }
         public string MapLabel { get; set; }
         public string Stardust { get; set; }
         public string Runtime { get; set; }
+        public string pokeMax { get; set; }
 
         public Overlay()
         {
+            TeamName = "Neutral";
             Position = new Location(0.00, 0.00);
         }
 
@@ -123,7 +65,7 @@ namespace WeezBot
             this.Nickname = Nickname;
             this.Level = "Level " + Level;
             this.xp = (this.HaveXp = haveXp) + " / " + (this.NeedXp = needXp);
-            this.Stardust = "Stardust: " + stardust;
+            this.Stardust = stardust;
             this.Runtime = runtime;
         }
 
@@ -135,12 +77,13 @@ namespace WeezBot
 
         public void setPokeImg(string PokemonName)
         {
-            PokemonImage = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "Pokemon", PokemonName+ ".png")));
+            PokemonImage = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "Models", PokemonName+ ".png")));
         }
 
         public void setTeam(string TeamName)
         {
-            TeamImage = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img", "teams", "team_" + TeamName + ".png")));
+            ProfileImage = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "Teams", "team_" + TeamName + "_profile.png")));
+            TeamImage = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "Teams", "team_" + TeamName + ".png")));
             if (TeamName == "Red") this.TeamName = "Team Valor";
             if (TeamName == "Yellow") this.TeamName = "Team Instinct";
             if (TeamName == "Blue") this.TeamName = "Team Mystic";
@@ -173,8 +116,8 @@ namespace WeezBot
             this.targetKm = targetKm;
             this.Visibility = Visibility;
             this.incubator = incubator;
-            if (incubator == true) this.image = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(),"img/Pokemon_incubator.png")));
-            else this.image = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "img/Pokemon_egg.png")));
+            if (incubator == true) this.image = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(),"Images/Pokemon_incubator.png")));
+            else this.image = new BitmapImage(new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images/Pokemon_egg.png")));
         }
     }
 }

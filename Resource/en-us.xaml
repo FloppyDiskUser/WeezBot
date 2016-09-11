@@ -6,6 +6,7 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <util:EnumToArrayConverter x:Key="EnumToArrayConv" />
     <util:VisibilityConverter x:Key="VisConv" />
+    <util:StartAnimationConverter x:Key="StartAniConv" />
     <util:VisibilityReversedConverter x:Key="VisRevConv" />
     <sys:String x:Key="AppTitle">Config Tool</sys:String>
     <!--<sys:String x:Key=""></sys:String>
@@ -84,6 +85,24 @@
                 <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
                 <Image Source="{Binding imageSource}" Height="100" />
                 <Controls:ToggleSwitch OffLabel="Keep" OnLabel="Evolve" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </DataTemplate>
+    <DataTemplate x:Key="PokemonCatchToggleTemplate" DataType="PokemonToggle">
+        <materialDesign:Card Margin="0,10,10,0" Width="220" Height="180">
+            <StackPanel>
+                <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
+                <Image Source="{Binding imageSource}" Height="100" />
+                <Controls:ToggleSwitch OffLabel="Catch" OnLabel="Ignore" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </DataTemplate>
+    <DataTemplate x:Key="PokemonSnipeToggleTemplate" DataType="PokemonToggle">
+        <materialDesign:Card Margin="0,10,10,0" Width="220" Height="180">
+            <StackPanel>
+                <TextBlock Width="240" FontSize="20" Text="{Binding translatedName}" TextAlignment="Left"  Margin="3,1" VerticalAlignment="Center" />
+                <Image Source="{Binding imageSource}" Height="100" />
+                <Controls:ToggleSwitch OffLabel="Ignore" OnLabel="Snipe" IsChecked="{Binding IsChecked}" Margin="10,0,0,0"/>
             </StackPanel>
         </materialDesign:Card>
     </DataTemplate>

@@ -39,6 +39,21 @@ namespace WeezBot.Utils
         }
     }
 
+    public class StartAnimationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            UIElement el = value as UIElement;
+            bool hide = (el.Visibility == Visibility.Visible) ? true
+                      : false ;
+            return hide;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class VisibilityReversedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

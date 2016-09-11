@@ -2,6 +2,7 @@
 using PoGo.NecroBot.Logic.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +15,12 @@ namespace WeezBot.MainWindowData
     {
         public Boolean SortByIv { get; set; }
         public bool LoginOnAntim8 { get; set; }
-        public latestAction[] RecentActions { get; set; }
         public int PokestopCounter { get; set; }
         public int PokemonCounter { get; set; }
         public int quickGuidePos { get; set; }
         public Boolean firstStart { get; set; }
         public BitmapImage TopLeftImage { get; set; }
-        public MessageDesign[] CommandLineBox { get; set; }
+        public List<MessageDesign> CommandLineBox { get; set; }
         public Label[] CommandLineLabels { get; set; }
         public Request.Request Requester { get; set; }
         public DateTime stopBotTime { get; set; }
@@ -42,18 +42,25 @@ namespace WeezBot.MainWindowData
         public bool setDateByField { get; set; }
         public DateTime NewStartBotTime { get; set; }
         public DateTime NewStopBotTime { get; set; }
+        public List<PokemonNest> PokeNest { get; set; }
+        public MapLayer PokemonNestLayer { get; set; }
+        public string username { get; set; }
+        public string Key { get; set; }
+        public string password { get; set; }
+        public bool needUpdate { get; set; }
+        public bool isConnected { get; set; }
+        public Image imageNew { get; set; }
 
         public Variables()
         {
             SortByIv = false;
             LoginOnAntim8 = false;
-            RecentActions = new latestAction[100];
             PokemonCounter = 0;
             PokestopCounter = 0;
             quickGuidePos = 0;
             TopLeftImage = new BitmapImage();
             firstStart = true;
-            CommandLineBox = new MessageDesign[8];
+            CommandLineBox = new List<MessageDesign>();
             CommandLineLabels = new Label[8];
             Requester = new Request.Request();
             stopBotTime = new DateTime();
@@ -74,6 +81,25 @@ namespace WeezBot.MainWindowData
             setDateByField = true;
             NewStartBotTime = new DateTime();
             NewStopBotTime = new DateTime();
+            PokeNest = new List<PokemonNest>();
+            PokemonNestLayer = new MapLayer();
+            username = "";
+            Key = "";
+            needUpdate = false;
+            password = "";
+            isConnected = false;
+            imageNew = new Image();
+            imageNew.Height = 50;
+            imageNew.Width = 50;
+            BitmapImage biIm = new BitmapImage();
+            biIm.BeginInit();
+            biIm.UriSource = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Images", "player.png"));
+            biIm.DecodePixelWidth = 50;
+            biIm.DecodePixelHeight = 50;
+            biIm.EndInit();
+            imageNew.Source = biIm;
+            imageNew.Opacity = 0.9;
+            imageNew.Stretch = System.Windows.Media.Stretch.None;
         }
     }
 }

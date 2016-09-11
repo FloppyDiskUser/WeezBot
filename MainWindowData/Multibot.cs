@@ -9,7 +9,7 @@ namespace WeezBot.MainWindowData
 {
     public class Multibot
     {
-        public bool checkSwitch = true;
+        public bool checkSwitch { get; set; }
         public Boolean[] BotLoaded { get; set; }
         public string[] BotName { get; set; }
         public Boolean[] BotAlreadyConfig { get; set; }

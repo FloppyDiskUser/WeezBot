@@ -27,10 +27,7 @@ namespace WeezBot
 
         public Information()
         {
-            for(int i = 0; i < 8; ++i)
-            {
-                Messages[i] = new MessageDesign("","Black");
-            }
+            Messages.Add(new MessageDesign("Info > Starting...","Black"));
             List<KeyValuePair<int, string>> PokemonTranslationStrings = Uebersetzer._PokemonNameToId;
             foreach (var pokemon in PokemonTranslationStrings)
             {
@@ -67,7 +64,7 @@ namespace WeezBot
         public string liveHappening = "moving";
         public double[] coords = new double[2];
         public bool LoginError = false;
-        public MessageDesign[] Messages = new MessageDesign[8];
+        public List<MessageDesign> Messages = new List<MessageDesign>();
 
         public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black)
         {
@@ -84,53 +81,51 @@ namespace WeezBot
                 if (liveHappening == "moving") counter = 0;
             if (counter > 0) { liveHappening = "moving"; counter = 0; }
 
-            for(int h = 6;h >= 0; --h)
-            {
-                Messages[h + 1] = Messages[h];
-            }
             MessageDesign obj = new MessageDesign(this.Message = level.ToString() + " > " + message, Color);
-            Messages[0] = obj;
+            Messages.Add(obj);
+            while (Messages.Count > 199)
+                Messages.RemoveAt(0);
         }
 
-        public MessageDesign[] readMessage()
+        public List<MessageDesign> readMessage()
         {
             return Messages;
         }
 
-        private void HandleEvent(ProfileEvent profileEvent, ISession session)
+        public void HandleEvent(ProfileEvent profileEvent, ISession session)
         {
              Write(session.Translation.GetTranslation(TranslationString.EventProfileLogin,
                 profileEvent.Profile.PlayerData.Username ?? ""));
         }
 
-        private void HandleEvent(ErrorEvent errorEvent, ISession session)
+        public void HandleEvent(ErrorEvent errorEvent, ISession session)
         {
              ErrorHappen = true;
             liveHappening = "Error";
              Write(errorEvent.ToString(), LogLevel.Error);
         }
 
-        private void HandleEvent(NoticeEvent noticeEvent, ISession session)
+        public void HandleEvent(NoticeEvent noticeEvent, ISession session)
         {
              Write(noticeEvent.ToString());
         }
 
-        private void HandleEvent(WarnEvent warnEvent, ISession session)
+        public void HandleEvent(WarnEvent warnEvent, ISession session)
         {
             liveHappening = "softban";
-             Write(warnEvent.ToString(), LogLevel.Warning);
+            Write(warnEvent.ToString(), LogLevel.Warning);
             // If the event requires no input return.
             if (!warnEvent.RequireInput) return;
         }
 
-        private void HandleEvent(UseLuckyEggEvent useLuckyEggEvent, ISession session)
+        public void HandleEvent(UseLuckyEggEvent useLuckyEggEvent, ISession session)
         {
             LuckyEggActive = true;
              Write(session.Translation.GetTranslation(TranslationString.EventUsedLuckyEgg, useLuckyEggEvent.Count),
                 LogLevel.Egg);
         }
 
-        private void HandleEvent(PokemonEvolveEvent pokemonEvolveEvent, ISession session)
+        public void HandleEvent(PokemonEvolveEvent pokemonEvolveEvent, ISession session)
         {
             liveHappening = "evolve";
             PokemonID = pokemonNameToId[pokemonEvolveEvent.Id.ToString()];
@@ -142,7 +137,7 @@ namespace WeezBot
                 LogLevel.Evolve);
         }
 
-        private void HandleEvent(TransferPokemonEvent transferPokemonEvent, ISession session)
+        public void HandleEvent(TransferPokemonEvent transferPokemonEvent, ISession session)
         {
             liveHappening = "transfer";
             PokemonID = pokemonNameToId[transferPokemonEvent.Id.ToString()];
@@ -158,13 +153,13 @@ namespace WeezBot
                 LogLevel.Transfer);
         }
 
-        private   void HandleEvent(ItemRecycledEvent itemRecycledEvent, ISession session)
+        public void HandleEvent(ItemRecycledEvent itemRecycledEvent, ISession session)
         {
              Write(session.Translation.GetTranslation(TranslationString.EventItemRecycled, itemRecycledEvent.Count, itemRecycledEvent.Id),
                 LogLevel.Recycling);
         }
 
-        private   void HandleEvent(EggIncubatorStatusEvent eggIncubatorStatusEvent, ISession session)
+        public void HandleEvent(EggIncubatorStatusEvent eggIncubatorStatusEvent, ISession session)
         {
              Write(eggIncubatorStatusEvent.WasAddedNow
                 ? session.Translation.GetTranslation(TranslationString.IncubatorPuttingEgg, eggIncubatorStatusEvent.KmRemaining)
@@ -172,7 +167,7 @@ namespace WeezBot
                 LogLevel.Egg);
         }
 
-        private void HandleEvent(EggHatchedEvent eggHatchedEvent, ISession session)
+        public void HandleEvent(EggHatchedEvent eggHatchedEvent, ISession session)
         {
             liveHappening = "hatched";
             PokemonID = pokemonNameToId[eggHatchedEvent.PokemonId.ToString()];
@@ -182,7 +177,7 @@ namespace WeezBot
                 LogLevel.Egg);
         }
 
-        private   void HandleEvent(FortUsedEvent fortUsedEvent, ISession session)
+        public void HandleEvent(FortUsedEvent fortUsedEvent, ISession session)
         {
             liveHappening = "looting";
             coords[0] = fortUsedEvent.Latitude;
@@ -196,7 +191,7 @@ namespace WeezBot
                 LogLevel.Pokestop);
         }
 
-        private   void HandleEvent(FortFailedEvent fortFailedEvent, ISession session)
+        public void HandleEvent(FortFailedEvent fortFailedEvent, ISession session)
         {
             liveHappening = "lootingFailed";
             if (fortFailedEvent.Try != 1 && fortFailedEvent.Looted == false)
@@ -218,7 +213,7 @@ namespace WeezBot
             }
         }
 
-        private   void HandleEvent(FortTargetEvent fortTargetEvent, ISession session)
+        public void HandleEvent(FortTargetEvent fortTargetEvent, ISession session)
         {
             liveHappening = "moving";
             int intTimeForArrival = (int)(fortTargetEvent.Distance / (session.LogicSettings.WalkingSpeedInKilometerPerHour * 0.5));
@@ -229,7 +224,7 @@ namespace WeezBot
                 LogLevel.Info, ConsoleColor.Gray);
         }
 
-        private   void HandleEvent(PokemonCaptureEvent pokemonCaptureEvent, ISession session)
+        public void HandleEvent(PokemonCaptureEvent pokemonCaptureEvent, ISession session)
         {
             Func<ItemId, string> returnRealBallName = a =>
             {
@@ -303,7 +298,7 @@ namespace WeezBot
                 coords[0] = pokemonCaptureEvent.Latitude;
                 coords[1] = pokemonCaptureEvent.Longitude;
                 PokemonName = session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id);
-                Pokemon.setAll(PokemonName, pokemonCaptureEvent.Cp + " / " + pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00") + " % ", pokemonCaptureEvent.FamilyCandies.ToString(), pokemonCaptureEvent.UniqueId, "", "","");
+                Pokemon.setAll(PokemonName, pokemonCaptureEvent.Cp + " / " + pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00") + " % ", pokemonCaptureEvent.FamilyCandies.ToString(), pokemonCaptureEvent.UniqueId,"","","");
                 message = session.Translation.GetTranslation(TranslationString.EventPokemonCaptureSuccess, catchStatus, catchType, session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
                 pokemonCaptureEvent.Level, pokemonCaptureEvent.Cp, pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00"), pokemonCaptureEvent.Probability,
                 pokemonCaptureEvent.Distance.ToString("F2"),
@@ -323,13 +318,13 @@ namespace WeezBot
 
         }
 
-        private   void HandleEvent(NoPokeballEvent noPokeballEvent, ISession session)
+        public void HandleEvent(NoPokeballEvent noPokeballEvent, ISession session)
         {
              Write(session.Translation.GetTranslation(TranslationString.EventNoPokeballs, noPokeballEvent.Id, noPokeballEvent.Cp),
                 LogLevel.Caught);
         }
 
-        private   void HandleEvent(UseBerryEvent useBerryEvent, ISession session)
+        public void HandleEvent(UseBerryEvent useBerryEvent, ISession session)
         {
             string strBerry;
             switch (useBerryEvent.BerryType)
@@ -346,12 +341,12 @@ namespace WeezBot
                 LogLevel.Berry);
         }
 
-        private   void HandleEvent(SnipeEvent snipeEvent, ISession session)
+        public void HandleEvent(SnipeEvent snipeEvent, ISession session)
         {
              Write(snipeEvent.ToString(), LogLevel.Sniper);
         }
 
-        private void HandleEvent(SnipeScanEvent snipeScanEvent, ISession session)
+        public void HandleEvent(SnipeScanEvent snipeScanEvent, ISession session)
         {
              Write(snipeScanEvent.PokemonId == PokemonId.Missingno
                 ? ((snipeScanEvent.Source != null) ? "(" + snipeScanEvent.Source + ") " : null) + session.Translation.GetTranslation(TranslationString.SnipeScan,
@@ -361,7 +356,7 @@ namespace WeezBot
                     $"{snipeScanEvent.Bounds.Latitude},{snipeScanEvent.Bounds.Longitude}"), LogLevel.Sniper);
         }
 
-        private   void HandleEvent(DisplayHighestsPokemonEvent displayHighestsPokemonEvent, ISession session)
+        public void HandleEvent(DisplayHighestsPokemonEvent displayHighestsPokemonEvent, ISession session)
         {
             string strHeader;
             //PokemonData | CP | IV | Level | MOVE1 | MOVE2 | Candy
@@ -407,12 +402,12 @@ namespace WeezBot
             }
         }
 
-        private   void HandleEvent(EvolveCountEvent evolveCountEvent, ISession session)
+        public void HandleEvent(EvolveCountEvent evolveCountEvent, ISession session)
         {
              Write(session.Translation.GetTranslation(TranslationString.PkmPotentialEvolveCount, evolveCountEvent.Evolves), LogLevel.Evolve);
         }
 
-        private   void HandleEvent(UpdateEvent updateEvent, ISession session)
+        public void HandleEvent(UpdateEvent updateEvent, ISession session)
         {
              Write(updateEvent.ToString(), LogLevel.Update);
         }
