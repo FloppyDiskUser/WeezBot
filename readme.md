@@ -16,12 +16,12 @@ weezbot is s Pokemon Go bot. It farms pokestops, transfers unwanted pokemon for 
 
 ### Images
 
-![img1](https://cloud.githubusercontent.com/assets/21108606/18036834/b6055e3e-6d75-11e6-97eb-71a69b096d2c.PNG)
-![img2](https://cloud.githubusercontent.com/assets/21108606/18036835/cc28d042-6d75-11e6-8d1f-d70f9c911af5.PNG)
-![img3](https://cloud.githubusercontent.com/assets/21108606/18036836/d740b8e6-6d75-11e6-8e7a-d8e89eee94d1.PNG)
-![img4](https://cloud.githubusercontent.com/assets/21108606/18036850/02de3df2-6d76-11e6-9f50-d27c342cddc9.PNG)
-![img7](https://cloud.githubusercontent.com/assets/21108606/18036854/0dd36322-6d76-11e6-9fab-d813ca939048.PNG)
-![img6](https://cloud.githubusercontent.com/assets/21108606/18036863/29993384-6d76-11e6-8710-e90f7d167d6c.PNG)
+![2](https://cloud.githubusercontent.com/assets/21108606/18418989/8e0c49e2-7851-11e6-96ed-6f323aa54182.png)
+![3](https://cloud.githubusercontent.com/assets/21108606/18418990/8e331ec8-7851-11e6-8864-7216794c1167.png)
+![5](https://cloud.githubusercontent.com/assets/21108606/18418991/8e3efe0a-7851-11e6-93ec-f2cd5904b330.png)
+![6](https://cloud.githubusercontent.com/assets/21108606/18418993/8e41066e-7851-11e6-9b2d-1e9b0385b6cb.png)
+![1](https://cloud.githubusercontent.com/assets/21108606/18418992/8e3f9838-7851-11e6-9f28-e1f8ce5f8abd.png)
+![4](https://cloud.githubusercontent.com/assets/21108606/18418109/7a266338-7840-11e6-8431-c92c54c3a7a8.png)
 
 ## Credits
 ©FloppyDiskUser
