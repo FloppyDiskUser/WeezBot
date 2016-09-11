@@ -8,6 +8,7 @@ weezbot is s Pokemon Go bot. It farms pokestops, transfers unwanted pokemon for 
 - Graphical Interface
 - Farming Pokestops
 - Catching Pokemon
+- Sniping Pokemon
 - Select Position by Address
 - Integrated Pokemon Nests ( by pkmngotrading.com )
 - Easy To Use Interface
